@@ -1,3 +1,6 @@
+# Neruko
+dist/*
+
 # Logs
 logs
 *.log

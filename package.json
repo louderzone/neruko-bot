@@ -1,0 +1,36 @@
+{
+  "name": "@lz/neruko",
+  "version": "1.0.0",
+  "description": "Discord bot for shift management",
+  "main": "dist/bootstrap.js",
+  "scripts": {
+    "lint": "eslint \"src/**\"",
+    "start": "node dist/bootstrap.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KokomiShiina/neruko-bot.git"
+  },
+  "keywords": [
+    "discord",
+    "typescript",
+    "bot-framework",
+    "express"
+  ],
+  "author": "Eric Lam <ericlamyauping@gmail.com>",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/KokomiShiina/neruko-bot/issues"
+  },
+  "homepage": "https://github.com/KokomiShiina/neruko-bot#readme",
+  "dependencies": {
+    "discord.io": "^2.5.3"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
+    "eslint": "^6.8.0",
+    "typescript": "^3.7.5"
+  }
+}

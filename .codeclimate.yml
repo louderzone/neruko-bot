@@ -1,0 +1,16 @@
+version: "2" # required by codeclimate, do not change
+plugins: # additional checks using linter
+  eslint:
+    enabled: true
+    channel: "eslint-6"
+    config:
+      config: ".eslintrc.json"
+      extensions:
+        - .js
+        - .ts
+exclude_patterns:
+  - '**/.vscode'
+  - '**/lib/**'
+  - '**/dist/**'
+  - '**/_deprecated/**'
+  - '**/*.min.*'
