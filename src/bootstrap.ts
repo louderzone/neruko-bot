@@ -1,6 +1,7 @@
 import { Client, TextChannel, Collection } from "discord.js";
 import express = require("express");
 import { Request, Response } from "express";
+import bodyParser = require("body-parser");
 
 const bot = new Client();
 bot.on('ready', () => {
@@ -10,9 +11,10 @@ bot.login(process.env.DISCORD_TOKEN);
 
 // Starts webserver
 const app = express();
+app.use(bodyParser.json());
 app.post('/shift/announce', (req: Request, res: Response) => {
     const channels = bot.channels as Collection<string, TextChannel>;
-    channels.find(`name`, `班表／シフト確定`).send(req.body);
+    channels.find(`name`, `雑談（zh）`).send(req.body.msg);
     res.send(200);
 });
 app.listen(process.env.APP_PORT, () => console.log("Started"));
