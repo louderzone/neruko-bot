@@ -14,7 +14,7 @@ const app = express();
 app.use(bodyParser.json());
 app.post('/shift/announce', (req: Request, res: Response) => {
     const channels = bot.channels as Collection<string, TextChannel>;
-    channels.find(`name`, `雑談（zh）`).send(req.body.msg);
+    channels.find(`name`, process.env.CHANNEL_NAME).send(req.body.msg);
     res.send(200);
 });
 app.listen(process.env.APP_PORT, () => console.log("Started"));
