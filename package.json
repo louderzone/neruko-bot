@@ -25,7 +25,8 @@
   },
   "homepage": "https://github.com/KokomiShiina/neruko-bot#readme",
   "dependencies": {
-    "discord.js": "^11.5.1"
+    "discord.js": "^11.5.1",
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "@types/node": "^13.7.4",
