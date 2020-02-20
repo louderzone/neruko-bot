@@ -3,20 +3,7 @@
     "compilerOptions": {
         "baseUrl": "./src",
         "declaration": true,
-        "outDir": "./dist",        
-        "plugins": [
-            {
-                "name": "typescript-tslint-plugin",
-                "alwaysShowRuleFailuresAsWarnings": true,
-                "ignoreDefinitionFiles": true,
-                "configFile": "./tslint.json",
-                "suppressWhileTypeErrorsPresent": false,
-                "mockTypeScriptVersion": false
-            },
-            {
-                "name": "typescript-lit-html-plugin"
-            }
-        ]
+        "outDir": "./dist"
     },
     "include": [
         "src/**/*"
