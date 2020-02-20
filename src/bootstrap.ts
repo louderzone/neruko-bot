@@ -1,7 +1,18 @@
-import { Client } from "discord.js";
+import { Client, TextChannel, Collection } from "discord.js";
+import express = require("express");
+import { Request, Response } from "express";
 
-const client = new Client();
-client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+const bot = new Client();
+bot.on('ready', () => {
+    console.log(`Logged in as ${bot.user.tag}!`);
 });
-client.login(process.env.DISCORD_TOKEN);
+bot.login(process.env.DISCORD_TOKEN);
+
+// Starts webserver
+const app = express();
+app.post('/shift/announce', (req: Request, res: Response) => {
+    const channels = bot.channels as Collection<string, TextChannel>;
+    channels.find(`name`, `班表／シフト確定`).send(req.body);
+    res.send(200);
+});
+app.listen("61000", () => console.log("Started"));
