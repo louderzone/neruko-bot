@@ -12,6 +12,9 @@ bot.login(process.env.DISCORD_TOKEN);
 // Starts webserver
 const app = express();
 app.use(bodyParser.json());
+app.get("/", (req: Request, res: Response) => {
+    res.send("Hello Happy World :) - Neruko~~");
+});
 app.post('/shift/announce', (req: Request, res: Response) => {
     const channels = bot.channels as Collection<string, TextChannel>;
     channels.find(`name`, process.env.CHANNEL_NAME).send(req.body.msg);
