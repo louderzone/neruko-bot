@@ -17,7 +17,8 @@
                 "${workspaceFolder}/dist/**/*.js"
             ],
             "env": {
-                "DISCORD_TOKEN": "<You discord app token>"
+                "DISCORD_TOKEN": "<You discord app token>",
+                "APP_PORT": 61000
             }
         }
     ]

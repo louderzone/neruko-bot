@@ -15,4 +15,4 @@ app.post('/shift/announce', (req: Request, res: Response) => {
     channels.find(`name`, `班表／シフト確定`).send(req.body);
     res.send(200);
 });
-app.listen("61000", () => console.log("Started"));
+app.listen(process.env.APP_PORT, () => console.log("Started"));
