@@ -20,4 +20,4 @@ app.post('/shift/announce', (req: Request, res: Response) => {
     channels.find(`name`, process.env.CHANNEL_NAME).send(req.body.msg);
     res.send(200);
 });
-app.listen(process.env.APP_PORT, () => console.log("Started"));
+app.listen(process.env.PORT, () => console.log("Started"));
