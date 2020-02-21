@@ -20,10 +20,12 @@ async function init(): Promise<void> {
     app.post('/shift/announce', (req: Request, res: Response) => {
         const channels = bot.channels as Collection<string, TextChannel>;
         const talkChannels =  channels.filter((c) => c.name === process.env.CHANNEL_NAME);
+        console.log(talkChannels);
         talkChannels.forEach(c => {
+            console.log(`Sent to ${c.name}: ${c.id}`)
             c.send(req.body.msg);
         });
-        res.send(200);
+        res.sendStatus(200);
     });
     app.listen(process.env.PORT, () => console.log("Started"));
 }
