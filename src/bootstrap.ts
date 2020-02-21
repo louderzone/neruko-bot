@@ -7,7 +7,7 @@ async function init(): Promise<void> {
     const bot = new Client();
     bot.on("ready", () => {
         console.log(`Logged in as ${bot.user.tag}!`);
-        console.log(`Output to: ${process.env.CHANNEL_NAME}`);
+        console.log(`Output to: ${process.env.CHANNEL_ID}`);
     });
     bot.on("message", (msg) => {
         if (msg.content === "~neruko:cid") {
@@ -25,7 +25,7 @@ async function init(): Promise<void> {
     });
     app.post('/shift/announce', (req: Request, res: Response) => {
         const channels = bot.channels as Collection<string, TextChannel>;
-        const talkChannels =  channels.filter((c) => c.name === process.env.CHANNEL_NAME);
+        const talkChannels =  channels.filter((c) => c.id === process.env.CHANNEL_ID);
         console.log(talkChannels);
         talkChannels.forEach(c => {
             console.log(`Sent to ${c.name}: ${c.id}`)

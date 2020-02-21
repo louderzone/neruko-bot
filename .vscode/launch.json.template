@@ -18,7 +18,8 @@
             ],
             "env": {
                 "DISCORD_TOKEN": "<You discord app token>",
-                "CHANNEL_NAME":"<The channel to announce to>",
+                "CHANNEL_ID": "<The id of the channel to accounce to>",
+                "CHANNEL_NAME":"<The name of channel to announce to>",
                 "PORT": 61000
             }
         }
