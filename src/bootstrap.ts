@@ -5,8 +5,14 @@ import bodyParser = require("body-parser");
 
 async function init(): Promise<void> {
     const bot = new Client();
-    bot.on('ready', () => {
+    bot.on("ready", () => {
         console.log(`Logged in as ${bot.user.tag}!`);
+        console.log(`Output to: ${process.env.CHANNEL_NAME}`);
+    });
+    bot.on("message", (msg) => {
+        if (msg.content === "~neruko:cid") {
+            msg.reply(`Your channel id is : \`${msg.channel.id}\``);
+        }
     });
     // Make sure Discord bot is logged in before anything.
     await bot.login(process.env.DISCORD_TOKEN);
