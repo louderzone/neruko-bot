@@ -25,10 +25,8 @@ async function init(): Promise<void> {
     });
     app.post('/shift/announce', (req: Request, res: Response) => {
         const channels = bot.channels as Collection<string, TextChannel>;
-        const talkChannels =  channels.filter((c) => c.id === process.env.CHANNEL_ID);
-        console.log(talkChannels);
+        const talkChannels =  channels.filter((c) => c.id === req.body.cid);
         talkChannels.forEach(c => {
-            console.log(`Sent to ${c.name}: ${c.id}`)
             c.send(req.body.msg);
         });
         res.sendStatus(200);
