@@ -3,6 +3,8 @@ import express = require("express");
 import { Request, Response } from "express";
 import bodyParser = require("body-parser");
 
+const REPLY_COMMAND = "/nrk:reply ";
+
 async function init(): Promise<void> {
     const bot = new Client();
     bot.on("ready", () => {
@@ -10,8 +12,9 @@ async function init(): Promise<void> {
         console.log(`Output to: ${process.env.CHANNEL_ID}`);
     });
     bot.on("message", (msg) => {
-        if (msg.content === "~neruko:cid") {
-            msg.reply(`Your channel id is : \`${msg.channel.id}\``);
+        if (msg.content.startsWith(REPLY_COMMAND)) {
+            msg.delete();
+            msg.channel.send(msg.content.substring(REPLY_COMMAND.length));
         }
     });
     // Make sure Discord bot is logged in before anything.
