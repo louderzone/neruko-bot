@@ -3,7 +3,9 @@
     "compilerOptions": {
         "baseUrl": "./src",
         "declaration": true,
-        "outDir": "./dist"
+        "outDir": "./dist",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
     },
     "include": [
         "src/**/*"
