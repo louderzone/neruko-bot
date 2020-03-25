@@ -1,8 +1,9 @@
 import { discordOnMessage } from "./message";
 import { Client } from "discord.js";
 import { buildProviderModule, fluentProvide } from "inversify-binding-decorators";
-import { SERVICE } from "constants/services";
-import { container } from "inversify.config";
+import { SERVICE } from "../constants/services";
+import "reflect-metadata";
+import { container } from "../inversify.config";
 
 /**
  * Represents the Neruko bot instance
