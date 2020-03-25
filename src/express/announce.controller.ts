@@ -3,6 +3,8 @@ import { inject } from "inversify";
 import { SERVICE } from "../constants/services";
 import { Neruko } from "../discord/bot.service";
 import { Collection, TextChannel } from "discord.js";
+import { ShiftForm } from "./announce/shift.form";
+import { SpeedForm } from "./announce/speed.form";
 
 @controller("/announce")
 export class AnnounceController extends BaseHttpController {
@@ -12,7 +14,7 @@ export class AnnounceController extends BaseHttpController {
 
     @httpPost("/shift")
     private shift(
-        @requestBody() body: any
+        @requestBody() body: ShiftForm
     ): interfaces.IHttpActionResult {
         const channels = this.neruko.getBot().channels as Collection<string, TextChannel>;
         const talkChannels =  channels.filter((c) => c.id === body.cid);
@@ -24,7 +26,7 @@ export class AnnounceController extends BaseHttpController {
 
     @httpPost("/speed")
     private speed(
-        @requestBody() body: any
+        @requestBody() body: SpeedForm
     ): interfaces.IHttpActionResult {
         const channels = this.neruko.getBot().channels as Collection<string, TextChannel>;
         const talkChannels =  channels.filter((c) => c.id === process.env.CHANNEL_ID);
