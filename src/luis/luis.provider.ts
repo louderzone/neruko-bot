@@ -6,18 +6,9 @@ import { LUISRuntimeClient } from "@azure/cognitiveservices-luis-runtime";
 const creds = new CognitiveServicesCredentials(process.env.LUIS_AUTHORING_KEY);
 export const luisClient = new LUISRuntimeClient(creds, process.env.LUIS_ENDPOINT);
 
-/**
- * Provide LUIS Recognizer in singleton manner
- */
-function provideLuisRecognizer() {
-    return (): Promise<LUISRuntimeClient> => {
-        return new Promise<LUISRuntimeClient>(async () => luisClient);
-    }
-}
-
 container.bind<LuisRecognizerProvider>(PROVIDER.LuisRecognizer)
     .toProvider<LUISRuntimeClient>(() => {
-        return () => {
+        return (): Promise<LUISRuntimeClient> => {
             return new Promise<LUISRuntimeClient>((resolve) => {
                 resolve(luisClient);
             })
