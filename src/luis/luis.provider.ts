@@ -4,7 +4,7 @@ import { CognitiveServicesCredentials } from "@azure/ms-rest-azure-js";
 import { LUISRuntimeClient } from "@azure/cognitiveservices-luis-runtime";
 
 const creds = new CognitiveServicesCredentials(process.env.LUIS_AUTHORING_KEY);
-export const luisClient = new LUISRuntimeClient(creds, "https://australiaeast.api.cognitive.microsoft.com/");
+export const luisClient = new LUISRuntimeClient(creds, process.env.LUIS_ENDPOINT);
 
 /**
  * Provide LUIS Recognizer in singleton manner

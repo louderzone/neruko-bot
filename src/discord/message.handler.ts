@@ -9,10 +9,38 @@ const slotName = process.env.LUIS_SLOT_NAME;
 const verbose = true;
 const showAllIntents = true;
 
+/**
+ * List of intents supported by the LUIS model
+ */
 const INTENT_NAME = {
     rankRun: "打排名",
     dd: "當DD",
     default: "None"
+}
+
+/**
+ * Creates the runner name according to who is mentioned as the runner in the context
+ */
+const RUNNER_NAME = {
+    "我": (msg: Message): string => `<@${msg.author.id}>`,
+    "default": (msg: Message, name?: string): string => name 
+        || (msg.mentions.members.size === 0 ?
+            "誰？？？" : // No one is mentioned, not really having any idea
+            msg.mentions.members.map(m => `<@${m.id}>`).join(" ")) // Some one mentioned, is probably him
+}
+
+/**
+ * Gets the runner name according to the context
+ * 
+ * @param runnerContext The entity back from LUIS
+ * @param msg The discord message
+ */
+function getRunnerName(runnerContext: string[], msg: Message): string {
+    if (runnerContext === undefined 
+        || runnerContext.length === 0) {
+        return RUNNER_NAME.default(msg);
+    }
+    return (RUNNER_NAME[runnerContext[0]] || RUNNER_NAME.default)(msg, runnerContext[0]);
 }
 
 /**
@@ -25,13 +53,14 @@ function buildMessage(response: PredictionGetSlotPredictionResponse, msg: Messag
     const intentName = INTENT_NAME[topIntent] || INTENT_NAME.default;
     if (intentName === INTENT_NAME.default) return null;
 
-    const { eventName, topRank } = response.prediction.entities;
-
-    const intentText = `<@${msg.author.id}> 想\`${intentName}\``;
+    // Build the text
+    const { eventName, topRank, runner } = response.prediction.entities;
+    const intentText = `${getRunnerName(runner, msg)}想\`${intentName}\``;
     const eventText = eventName === undefined ? "" : `活動：${eventName.join(", ")}`;
     const topRankText = topRank === undefined ? "" : `排名：${topRank[0]}`;
     const scoreText = `(Score: ${response.prediction.intents[topIntent].score})`;
 
+    // Output the analyze result
     const debugMessage = `\`\`\`\r\nTriggered:${msg.content}\r\n${eventText}\r\n${topRankText}\r\n\`\`\``;
     return `${intentText} ${scoreText}\r\n${debugMessage}`;
 }
