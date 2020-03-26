@@ -19,14 +19,25 @@ const INTENT_NAME = {
 }
 
 /**
+ * Gets the message about mentioned runners
+ *
+ * @param msg The discord message
+ * @param defaultMessage The default message if no one is mentioned
+ */
+function getMentionedRunners(msg: Message, defaultMessage: string): string {
+    return msg.mentions.members.size === 0 ?
+        defaultMessage :
+        msg.mentions.members.map(m => `<@${m.id}>`).join(" ");
+}
+
+/**
  * Creates the runner name according to who is mentioned as the runner in the context
  */
 const RUNNER_NAME = {
+    "你": (msg: Message): string => getMentionedRunners(msg, "誰？？？"),
     "我": (msg: Message): string => `<@${msg.author.id}>`,
     "default": (msg: Message, name?: string): string => name 
-        || (msg.mentions.members.size === 0 ?
-            "誰？？？" : // No one is mentioned, not really having any idea
-            msg.mentions.members.map(m => `<@${m.id}>`).join(" ")) // Some one mentioned, is probably him
+        || getMentionedRunners(msg, `<@${msg.author.id}>`) // No one is mentioned, and not talking about the user, is probably the author
 }
 
 /**
