@@ -26,7 +26,7 @@ export class Neruko {
             console.log(`Logged in as ${bot.user.tag}!`);
             console.log(`Output to: ${process.env.CHANNEL_ID}`);
         });
-        bot.on("message", (msg) => discordOnMessage(msg, _luisProvider));
+        bot.on("message", (msg) => discordOnMessage(bot, msg, _luisProvider));
         // Make sure Discord bot is logged in before anything.
         bot.login(process.env.DISCORD_TOKEN);
     }
