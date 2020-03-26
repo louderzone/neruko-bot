@@ -1,9 +1,12 @@
 import "reflect-metadata";
-import { BotBase } from "./message.handler";
+import { discordOnMessage } from "./message.handler";
 import { Client } from "discord.js";
 import { buildProviderModule, fluentProvide } from "inversify-binding-decorators";
 import { SERVICE } from "../constants/services";
 import { container } from "../inversify.config";
+import { LuisRecognizerProvider } from "../luis/luis.provider";
+import { PROVIDER } from "../constants/providers";
+import { inject } from "inversify";
 
 /**
  * Represents the Neruko bot instance
@@ -11,19 +14,19 @@ import { container } from "../inversify.config";
 @fluentProvide(SERVICE.Bot)
     .inSingletonScope()
     .done()
-export class Neruko extends BotBase {
+export class Neruko {
 
     private bot: Client;
 
-    constructor() {
-        super();
-
+    constructor(
+        @inject(PROVIDER.LuisRecognizer) private _luisProvider: LuisRecognizerProvider
+    ) {
         const bot = this.bot = new Client();
         bot.on("ready", () => {
             console.log(`Logged in as ${bot.user.tag}!`);
             console.log(`Output to: ${process.env.CHANNEL_ID}`);
         });
-        bot.on("message", this.discordOnMessage);
+        bot.on("message", (msg) => discordOnMessage(msg, _luisProvider));
         // Make sure Discord bot is logged in before anything.
         bot.login(process.env.DISCORD_TOKEN);
     }

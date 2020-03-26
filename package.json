@@ -26,14 +26,17 @@
   },
   "homepage": "https://github.com/KokomiShiina/neruko-bot#readme",
   "dependencies": {
+    "@azure/cognitiveservices-luis-runtime": "^5.0.0",
+    "@azure/ms-rest-azure-js": "^2.0.1",
     "body-parser": "^1.19.0",
     "discord.js": "^11.5.1",
     "express": "^4.17.1",
+    "install": "^0.13.0",
     "inversify": "^5.0.1",
     "inversify-binding-decorators": "^4.0.0",
     "inversify-express-utils": "^6.3.2",
     "inversify-inject-decorators": "^3.1.0",
-    "luis-sdk-async": "^1.0.0",
+    "npm": "^6.14.4",
     "reflect-metadata": "^0.1.13",
     "typescript": "^3.7.5"
   },

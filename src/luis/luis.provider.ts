@@ -1,28 +1,27 @@
 import { container } from "../inversify.config";
 import { PROVIDER } from "../constants/providers";
-import Luis = require("luis-sdk-async");
+import { CognitiveServicesCredentials } from "@azure/ms-rest-azure-js";
+import { LUISRuntimeClient } from "@azure/cognitiveservices-luis-runtime";
 
-/**
- * Creates the instance of luis recognizer
- */
-const luisRecognizer = new Luis(
-    process.env.LUIS_APP_ID,
-    process.env.LUIS_AUTHORING_KEY,
-    process.env.LUIS_END_POINT
-);
+const creds = new CognitiveServicesCredentials(process.env.LUIS_AUTHORING_KEY);
+export const luisClient = new LUISRuntimeClient(creds, "https://australiaeast.api.cognitive.microsoft.com/");
 
 /**
  * Provide LUIS Recognizer in singleton manner
  */
 function provideLuisRecognizer() {
-    return (): Promise<Luis> => {
-        return new Promise<Luis>(async () => {
-            return luisRecognizer
-        });
+    return (): Promise<LUISRuntimeClient> => {
+        return new Promise<LUISRuntimeClient>(async () => luisClient);
     }
 }
 
 container.bind<LuisRecognizerProvider>(PROVIDER.LuisRecognizer)
-    .toProvider<Luis>(provideLuisRecognizer);
+    .toProvider<LUISRuntimeClient>(() => {
+        return () => {
+            return new Promise<LUISRuntimeClient>((resolve) => {
+                resolve(luisClient);
+            })
+        }
+    });
 
-export type LuisRecognizerProvider = () => Promise<Luis>;
+export type LuisRecognizerProvider = () => Promise<LUISRuntimeClient>;
