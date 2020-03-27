@@ -17,9 +17,13 @@
                 "${workspaceFolder}/dist/**/*.js"
             ],
             "env": {
+                "LUIS_APP_ID": "<The id of you model you will use>",
+                "LUIS_AUTHORING_KEY": "<Your LUIS prediction key>",
+                "LUIS_ENDPOINT": "<The LUIS endpoint you will use>",
+                "LUIS_SLOT_NAME": "production",
                 "DISCORD_TOKEN": "<You discord app token>",
                 "CHANNEL_ID": "<The id of the channel to accounce to>",
-                "CHANNEL_NAME":"<The name of channel to announce to>",
+                "HOME_CHANNEL_ID": "<The id of the channel you will use for deubg>",
                 "PORT": 61000
             }
         }
