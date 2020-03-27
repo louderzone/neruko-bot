@@ -82,19 +82,24 @@ function getPredictionRequest(msg: Message): PredictionRequest {
  * @param response 
  */
 function buildMessage(response: PredictionGetSlotPredictionResponse, msg: Message): string {
-    const topIntent = response.prediction.topIntent;
+    const { topIntent, entities, intents }  = response.prediction;
     const intentName = INTENT_NAME[topIntent] || INTENT_NAME.default;
     if (intentName === INTENT_NAME.default) return null;
 
     // Build the text
-    const { eventName, topRank, runner } = response.prediction.entities;
+    const { eventName, topRank, runner } = entities;
     const intentText = `${getRunnerName(runner, msg)}想\`${intentName}\``;
-    const eventText = eventName === undefined ? "" : `活動：${eventName.join(", ")}`;
-    const topRankText = topRank === undefined ? "" : `排名：${topRank[0]}`;
-    const scoreText = `(Score: ${response.prediction.intents[topIntent].score})`;
+    const scoreText = `(Score: ${intents[topIntent].score})`;
+
+    // Debug messages
+    const eventText = eventName === undefined ? "" : `活動：${eventName.join(", ")}\r\n`;
+    const topRankText = topRank === undefined ? "" : `排名：${topRank[0]}\r\n`;
+    const intentsText = Object.keys(intents)
+        .map(i => `${INTENT_NAME[i] || INTENT_NAME.default}: (${intents[i].score})`).join("\r\n");
 
     // Output the analyze result
-    const debugMessage = `\`\`\`Triggered:${msg.content}\r\n${eventText}\r\n${topRankText}\`\`\``;
+    const debugMessage = `\`\`\`Triggered:${msg.content}\r\n${eventText}${topRankText}\r\n`
+        + `意向\r\n=====\r\n${intentsText}\`\`\``;
     return `${intentText} ${scoreText}\r\n${debugMessage}`;
 }
 
