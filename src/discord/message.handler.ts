@@ -1,6 +1,6 @@
 import { Message, Client, Collection, TextChannel } from "discord.js";
 import { LuisRecognizerProvider } from "../luis/luis.provider";
-import { PredictionGetSlotPredictionResponse } from "@azure/cognitiveservices-luis-runtime/esm/models";
+import { PredictionGetSlotPredictionResponse, PredictionRequest } from "@azure/cognitiveservices-luis-runtime/esm/models";
 
 const REPLY_COMMAND = "/nrk:reply ";
 
@@ -55,6 +55,23 @@ function getRunnerName(runnerContext: string[], msg: Message): string {
 }
 
 /**
+ * Gets the prediction request object
+ * 
+ * The method polish the discord message to
+ * remove quotes, special characters and mentions
+ * to improve the prediction result
+ * 
+ * @param msg The full discord message object
+ */
+function getPredictionRequest(msg: Message): PredictionRequest {
+    const query = msg.content
+        .split(/\r?\n/) // Split each line
+        .filter(m => !m.startsWith(">")) // Ignore quotes
+        .join(", "); // Comma separate each sentence to improve prediction quality
+    return { query };
+}
+
+/**
  * Creates the debug message for LUIS detection
  *
  * @param response 
@@ -72,7 +89,7 @@ function buildMessage(response: PredictionGetSlotPredictionResponse, msg: Messag
     const scoreText = `(Score: ${response.prediction.intents[topIntent].score})`;
 
     // Output the analyze result
-    const debugMessage = `\`\`\`\r\nTriggered:${msg.content}\r\n${eventText}\r\n${topRankText}\r\n\`\`\``;
+    const debugMessage = `\`\`\`Triggered:${msg.content}\r\n${eventText}\r\n${topRankText}\`\`\``;
     return `${intentText} ${scoreText}\r\n${debugMessage}`;
 }
 
@@ -99,7 +116,7 @@ export async function discordOnMessage(
     }
 
     if (msg.content === "" || msg.content === undefined || msg.content === null) { return; } // Do not send if empty to save credits
-    const predictionRequest = { query: msg.content };
+    const predictionRequest = getPredictionRequest(msg);
     const client = await luisProvider();
     const result = await client
         .prediction
