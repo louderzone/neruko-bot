@@ -1,6 +1,6 @@
 import { Message, Client, Collection, TextChannel } from "discord.js";
 import { LuisRecognizerProvider } from "../luis/luis.provider";
-import { PredictionGetSlotPredictionResponse, PredictionRequest } from "@azure/cognitiveservices-luis-runtime/esm/models";
+import { PredictionGetSlotPredictionResponse, PredictionRequest, PredictionGetSlotPredictionOptionalParams } from "@azure/cognitiveservices-luis-runtime/esm/models";
 
 const REPLY_COMMAND = "/nrk:reply ";
 
@@ -8,6 +8,7 @@ const appId = process.env.LUIS_APP_ID;
 const slotName = process.env.LUIS_SLOT_NAME;
 const verbose = true;
 const showAllIntents = true;
+const log = true;
 
 /**
  * List of intents supported by the LUIS model
@@ -120,7 +121,7 @@ export async function discordOnMessage(
     const client = await luisProvider();
     const result = await client
         .prediction
-        .getSlotPrediction(appId, slotName, predictionRequest, { verbose, showAllIntents });
+        .getSlotPrediction(appId, slotName, predictionRequest, { verbose, showAllIntents, log });
     const reply = buildMessage(result, msg);
     
     if (reply === null) return; // Do not register None intents
