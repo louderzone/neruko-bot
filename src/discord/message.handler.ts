@@ -28,7 +28,7 @@ const INTENT_NAME = {
 function getMentionedRunners(msg: Message, defaultMessage: string): string {
     return msg.mentions.members.size === 0 ?
         defaultMessage :
-        msg.mentions.members.map(m => `<@${m.id}>`).join(" ");
+        msg.mentions.members.map(m => `${m.user.tag}`).join(" ");
 }
 
 /**
@@ -36,9 +36,9 @@ function getMentionedRunners(msg: Message, defaultMessage: string): string {
  */
 const RUNNER_NAME = {
     "你": (msg: Message): string => getMentionedRunners(msg, "誰？？？"),
-    "我": (msg: Message): string => `<@${msg.author.id}>`,
+    "我": (msg: Message): string => `${msg.author.tag}`,
     "default": (msg: Message, name?: string): string => name 
-        || getMentionedRunners(msg, `<@${msg.author.id}>`) // No one is mentioned, and not talking about the user, is probably the author
+        || getMentionedRunners(msg, `${msg.author.tag}`) // No one is mentioned, and not talking about the user, is probably the author
 }
 
 /**
