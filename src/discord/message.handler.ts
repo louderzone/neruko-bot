@@ -1,6 +1,7 @@
 import { Message, Client, Collection, TextChannel } from "discord.js";
 import { LuisRecognizerProvider } from "../luis/luis.provider";
-import { PredictionGetSlotPredictionResponse, PredictionRequest, PredictionGetSlotPredictionOptionalParams } from "@azure/cognitiveservices-luis-runtime/esm/models";
+import { PredictionGetSlotPredictionResponse, PredictionRequest } from "@azure/cognitiveservices-luis-runtime/esm/models";
+import { INTENT_HANDLER } from "./intent.handler";
 
 const REPLY_COMMAND = "/nrk:reply ";
 
@@ -23,7 +24,7 @@ const INTENT_NAME = {
 /**
  * Gets the message about mentioned runners
  *
- * @param msg The discord message
+ * @param msg The discord message context
  * @param defaultMessage The default message if no one is mentioned
  */
 function getMentionedRunners(msg: Message, defaultMessage: string): string {
@@ -125,8 +126,12 @@ export async function discordOnMessage(
     const result = await client
         .prediction
         .getSlotPrediction(appId, slotName, predictionRequest, { verbose, showAllIntents, log });
-    const reply = buildMessage(result, msg);
     
+    // Handle the intent
+    await INTENT_HANDLER[result.prediction.topIntent](msg);
+
+    // Output debug message
+    const reply = buildMessage(result, msg);
     if (reply === null) return; // Do not register None intents
     const channels = context.channels as Collection<string, TextChannel>;
     const talkChannels =  channels.filter((c) => c.id === process.env.HOME_CHANNEL_ID);
