@@ -16,6 +16,7 @@ const log = true;
 const INTENT_NAME = {
     rankRun: "打排名",
     dd: "當DD",
+    greeting: "問候",
     default: "None"
 }
 
@@ -68,6 +69,8 @@ function getPredictionRequest(msg: Message): PredictionRequest {
     const query = msg.content
         .split(/\r?\n/) // Split each line
         .filter(m => !m.startsWith(">")) // Ignore quotes
+        .map(m => m.replace(/~~|\|\|/g, "")) // Replace the encapsulations 
+                                                         // as it seems to cause a lot of mistakes in luis
         .join(", "); // Comma separate each sentence to improve prediction quality
     return { query };
 }
