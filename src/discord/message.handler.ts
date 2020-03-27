@@ -89,7 +89,7 @@ function buildMessage(response: PredictionGetSlotPredictionResponse, msg: Messag
     const scoreText = `(Score: ${response.prediction.intents[topIntent].score})`;
 
     // Output the analyze result
-    const debugMessage = `\`\`\`\r\nTriggered:${msg.content}\r\n${eventText}\r\n${topRankText}\r\n\`\`\``;
+    const debugMessage = `\`\`\`Triggered:${msg.content}\r\n${eventText}\r\n${topRankText}\`\`\``;
     return `${intentText} ${scoreText}\r\n${debugMessage}`;
 }
 
