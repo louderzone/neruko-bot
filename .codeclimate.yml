@@ -4,10 +4,12 @@ plugins: # additional checks using linter
     enabled: true
     channel: "eslint-6"
     config:
-      config: ".eslintrc.json"
+      config: ".eslintrc.cc.json"
       extensions:
         - .js
         - .ts
+  tslint:
+    enabled: true
 exclude_patterns:
   - '**/.vscode'
   - '**/lib/**'
