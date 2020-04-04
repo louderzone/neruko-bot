@@ -71,7 +71,7 @@ function getPredictionRequest(msg: Message): PredictionRequest {
         .split(/\r?\n/) // Split each line
         .filter(m => !m.startsWith(">")) // Ignore quotes
         .map(m => m.replace(/~~|\|\|/g, "")) // Replace the encapsulations 
-                                                         // as it seems to cause a lot of mistakes in luis
+                                             // as it seems to cause a lot of mistakes in luis
         .join(", "); // Comma separate each sentence to improve prediction quality
     return { query };
 }
@@ -114,18 +114,20 @@ export async function discordOnMessage(
     msg: Message,
     luisProvider: LuisRecognizerProvider
 ): Promise<void> {
-    if (msg.author.id === context.user.id) {
+    const { author ,content, channel } = msg;
+    
+    if (author.id === context.user.id) {
         // Prevent from reading my own message
         return;
     }
 
-    if (msg.content.startsWith(REPLY_COMMAND)) {
+    if (content.startsWith(REPLY_COMMAND)) {
         msg.delete();
-        await msg.channel.send(msg.content.substring(REPLY_COMMAND.length));
+        await channel.send(content.substring(REPLY_COMMAND.length));
         return;
     }
 
-    if (msg.content === "" || msg.content === undefined || msg.content === null) { return; } // Do not send if empty to save credits
+    if (content === "" || content === undefined || content === null) { return; } // Do not send if empty to save credits
     const predictionRequest = getPredictionRequest(msg);
     const client = await luisProvider();
     const result = await client
