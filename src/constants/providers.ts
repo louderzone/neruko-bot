@@ -3,4 +3,4 @@
  */
 export const PROVIDER = {
     LuisRecognizer: Symbol.for("LuisRecognizerProvider")
-}
+};
