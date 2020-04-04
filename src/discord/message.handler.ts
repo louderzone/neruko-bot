@@ -9,7 +9,7 @@ const appId = process.env.LUIS_APP_ID;
 const slotName = process.env.LUIS_SLOT_NAME;
 const verbose = true;
 const showAllIntents = true;
-const log = true;
+const log = false;
 
 /**
  * List of intents supported by the LUIS model
