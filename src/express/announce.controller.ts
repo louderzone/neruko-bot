@@ -1,8 +1,8 @@
-import { controller, BaseHttpController, httpPost, requestBody, interfaces } from "inversify-express-utils";
+import { Collection, TextChannel } from "discord.js";
 import { inject } from "inversify";
+import { BaseHttpController, controller, httpPost, interfaces, requestBody } from "inversify-express-utils";
 import { SERVICE } from "../constants/services";
 import { Neruko } from "../discord/bot.service";
-import { Collection, TextChannel } from "discord.js";
 import { ShiftForm } from "./announce/shift.form";
 import { SpeedForm } from "./announce/speed.form";
 
@@ -10,7 +10,7 @@ import { SpeedForm } from "./announce/speed.form";
 export class AnnounceController extends BaseHttpController {
     constructor(@inject(SERVICE.Bot) private neruko: Neruko) {
         super();
-     }
+    }
 
     @httpPost("/shift")
     private shift(
@@ -18,7 +18,7 @@ export class AnnounceController extends BaseHttpController {
     ): interfaces.IHttpActionResult {
         const channels = this.neruko.getBot().channels as Collection<string, TextChannel>;
         const talkChannels =  channels.filter((c) => c.id === body.cid);
-        talkChannels.forEach(c => {
+        talkChannels.forEach((c) => {
             c.send(body.msg);
         });
         return this.statusCode(200);
@@ -30,7 +30,7 @@ export class AnnounceController extends BaseHttpController {
     ): interfaces.IHttpActionResult {
         const channels = this.neruko.getBot().channels as Collection<string, TextChannel>;
         const talkChannels =  channels.filter((c) => c.id === process.env.CHANNEL_ID);
-        talkChannels.forEach(c => {
+        talkChannels.forEach((c) => {
             c.send(body.msg);
         });
         return this.statusCode(200);

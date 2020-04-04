@@ -1,6 +1,9 @@
-import { Message, Client, Collection, TextChannel } from "discord.js";
+import {
+    PredictionGetSlotPredictionResponse,
+    PredictionRequest
+} from "@azure/cognitiveservices-luis-runtime/esm/models";
+import { Client, Collection, Message, TextChannel } from "discord.js";
 import { LuisRecognizerProvider } from "../luis/luis.provider";
-import { PredictionGetSlotPredictionResponse, PredictionRequest } from "@azure/cognitiveservices-luis-runtime/esm/models";
 import { INTENT_HANDLER } from "./intent.handler";
 
 const REPLY_COMMAND = "/nrk:reply ";
@@ -19,7 +22,7 @@ const INTENT_NAME = {
     dd: "當DD",
     greeting: "問候",
     default: "None"
-}
+};
 
 /**
  * Gets the message about mentioned runners
@@ -30,27 +33,28 @@ const INTENT_NAME = {
 function getMentionedRunners(msg: Message, defaultMessage: string): string {
     return msg.mentions.members.size === 0 ?
         defaultMessage :
-        msg.mentions.members.map(m => `${m.user.tag}`).join(" ");
+        msg.mentions.members.map((m) => `${m.user.tag}`).join(" ");
 }
 
 /**
  * Creates the runner name according to who is mentioned as the runner in the context
  */
 const RUNNER_NAME = {
-    "你": (msg: Message): string => getMentionedRunners(msg, "誰？？？"),
-    "我": (msg: Message): string => `${msg.author.tag}`,
-    "default": (msg: Message, name?: string): string => name 
-        || getMentionedRunners(msg, `${msg.author.tag}`) // No one is mentioned, and not talking about the user, is probably the author
-}
+    你: (msg: Message): string => getMentionedRunners(msg, "誰？？？"),
+    我: (msg: Message): string => `${msg.author.tag}`,
+    default: (msg: Message, name?: string): string => name
+        || getMentionedRunners(msg, `${msg.author.tag}`) // No one is mentioned,
+                                                         // and not talking about the user, is probably the author
+};
 
 /**
  * Gets the runner name according to the context
- * 
+ *
  * @param runnerContext The entity back from LUIS
  * @param msg The discord message
  */
 function getRunnerName(runnerContext: string[], msg: Message): string {
-    if (runnerContext === undefined 
+    if (runnerContext === undefined
         || runnerContext.length === 0) {
         return RUNNER_NAME.default(msg);
     }
@@ -59,18 +63,18 @@ function getRunnerName(runnerContext: string[], msg: Message): string {
 
 /**
  * Gets the prediction request object
- * 
+ *
  * The method polish the discord message to
  * remove quotes, special characters and mentions
  * to improve the prediction result
- * 
+ *
  * @param msg The full discord message object
  */
 function getPredictionRequest(msg: Message): PredictionRequest {
     const query = msg.content
         .split(/\r?\n/) // Split each line
-        .filter(m => !m.startsWith(">")) // Ignore quotes
-        .map(m => m.replace(/~~|\|\|/g, "")) // Replace the encapsulations 
+        .filter((m) => !m.startsWith(">")) // Ignore quotes
+        .map((m) => m.replace(/~~|\|\|/g, "")) // Replace the encapsulations
                                              // as it seems to cause a lot of mistakes in luis
         .join(", "); // Comma separate each sentence to improve prediction quality
     return { query };
@@ -79,12 +83,12 @@ function getPredictionRequest(msg: Message): PredictionRequest {
 /**
  * Creates the debug message for LUIS detection
  *
- * @param response 
+ * @param response
  */
 function buildMessage(response: PredictionGetSlotPredictionResponse, msg: Message): string {
     const { topIntent, entities, intents }  = response.prediction;
     const intentName = INTENT_NAME[topIntent] || INTENT_NAME.default;
-    if (intentName === INTENT_NAME.default) return null;
+    if (intentName === INTENT_NAME.default) { return null; }
 
     // Build the text
     const { eventName, topRank, runner } = entities;
@@ -95,7 +99,7 @@ function buildMessage(response: PredictionGetSlotPredictionResponse, msg: Messag
     const eventText = eventName === undefined ? "" : `活動：${eventName.join(", ")}\r\n`;
     const topRankText = topRank === undefined ? "" : `排名：${topRank[0]}\r\n`;
     const intentsText = Object.keys(intents)
-        .map(i => `${INTENT_NAME[i] || INTENT_NAME.default}: (${intents[i].score})`).join("\r\n");
+        .map((i) => `${INTENT_NAME[i] || INTENT_NAME.default}: (${intents[i].score})`).join("\r\n");
 
     // Output the analyze result
     const debugMessage = `\`\`\`Triggered:${msg.content}\r\n${eventText}${topRankText}\r\n`
@@ -114,8 +118,8 @@ export async function discordOnMessage(
     msg: Message,
     luisProvider: LuisRecognizerProvider
 ): Promise<void> {
-    const { author ,content, channel } = msg;
-    
+    const { author , content, channel } = msg;
+
     if (author.id === context.user.id) {
         // Prevent from reading my own message
         return;
@@ -133,16 +137,16 @@ export async function discordOnMessage(
     const result = await client
         .prediction
         .getSlotPrediction(appId, slotName, predictionRequest, { verbose, showAllIntents, log });
-    
+
     // Handle the intent
     await INTENT_HANDLER[result.prediction.topIntent](msg);
 
     // Output debug message
     const reply = buildMessage(result, msg);
-    if (reply === null) return; // Do not register None intents
+    if (reply === null) { return; } // Do not register None intents
     const channels = context.channels as Collection<string, TextChannel>;
     const talkChannels =  channels.filter((c) => c.id === process.env.HOME_CHANNEL_ID);
-        talkChannels.forEach(c => {
+    talkChannels.forEach((c) => {
             c.send(reply);
         });
 }
