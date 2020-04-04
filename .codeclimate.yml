@@ -10,6 +10,7 @@ plugins: # additional checks using linter
         - .ts
   tslint:
     enabled: true
+    config: "tslint.json"
 exclude_patterns:
   - '**/.vscode'
   - '**/lib/**'
