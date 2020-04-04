@@ -63,6 +63,22 @@ export class Neruko implements BotProvidable {
     )
     @command({ prefix: REPLY_COMMAND }, nrkReply)
     private async onMessage(msg: Message, client: Client): Promise<void> {
+        const { author, content } = msg;
+        if (author.id === "") {
+            let replyText = content;
+            const searchForEmojis = /:([A-z0-9-_]+):/g;
+            const emojisFound = content.match(searchForEmojis);
+            if (emojisFound.length === 0) { return; } // No emoji is found in this text
+            emojisFound.forEach((emoteString) => {
+                const name = emoteString.replace(/:/g, "");
+                const emoji = msg.guild.emojis.find((e) => e.name === name);
+                replyText = replyText.replace(emoteString, emoji.toString());
+            });
+            msg.delete();
+            msg.channel.send(`${replyText} - By <@${author.id}>`);
+            return;
+        }
+
         const result = await this.luis.predictDiscordAsync(msg);
 
         // Handle the intent
