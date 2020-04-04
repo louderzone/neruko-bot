@@ -68,7 +68,7 @@ export class Neruko implements BotProvidable {
             let replyText = content;
             const searchForEmojis = /(?<!<):([A-z0-9-_]+):/g;
             const emojisFound = content.match(searchForEmojis);
-            if (emojisFound.length === 0) { return; } // No emoji is found in this text
+            if (emojisFound === null) { return; } // No emoji is found in this text
             emojisFound.forEach((emoteString) => {
                 const name = emoteString.replace(/:/g, "");
                 const emoji = msg.guild.emojis.find((e) => e.name === name);
