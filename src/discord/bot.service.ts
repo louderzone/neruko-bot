@@ -6,6 +6,7 @@ import { SERVICE } from "../constants/services";
 import { LuisRecognizerProvider } from "../luis/luis.provider";
 import { guard } from "./guard.decorator";
 import { notMe } from "./guards/not-me";
+import { contentNotEmpty } from "./guards/content-not-empty";
 
 /**
  * Represents the Neruko bot instance
@@ -38,7 +39,8 @@ export class Neruko {
     }
 
     @guard(
-        notMe
+        notMe,
+        contentNotEmpty
     )
     private onMessage(msg: Message, client: Client): void {
         const channels = this.bot.channels as Collection<string, TextChannel>;
