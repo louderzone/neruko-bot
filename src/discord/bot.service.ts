@@ -5,7 +5,7 @@ import { PROVIDER } from "../constants/providers";
 import { SERVICE } from "../constants/services";
 import { LuisRecognizerProvider } from "../luis/luis.provider";
 import { guard } from "./guard.decorator";
-import { notMe } from "./guards/not-me";
+import { notMe } from "./guards/author-not-me";
 import { contentNotEmpty } from "./guards/content-not-empty";
 
 /**
