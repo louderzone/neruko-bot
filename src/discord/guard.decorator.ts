@@ -19,8 +19,8 @@ export function guard(...fn: Func[]) {
         descriptor: TypedPropertyDescriptor<DiscordMessageHandler>
     ): void => {
         const method = descriptor.value;
-        descriptor.value = function(msg: Message, client: Client): void {
-            if (!fn.every((check) => check(msg, client))) {
+        descriptor.value = function(...args): void {
+            if (!fn.every((check) => check(args[0], args[1]))) {
                 return null;
             }
             return method.apply(this, arguments);
