@@ -85,7 +85,7 @@ function getPredictionRequest(msg: Message): PredictionRequest {
  *
  * @param response
  */
-function buildMessage(response: PredictionGetSlotPredictionResponse, msg: Message): string {
+export function buildDebugMessage(response: PredictionGetSlotPredictionResponse, msg: Message): string {
     const { topIntent, entities, intents }  = response.prediction;
     const intentName = INTENT_NAME[topIntent] || INTENT_NAME.default;
     if (intentName === INTENT_NAME.default) { return null; }
@@ -142,7 +142,7 @@ export async function discordOnMessage(
     await INTENT_HANDLER[result.prediction.topIntent](msg);
 
     // Output debug message
-    const reply = buildMessage(result, msg);
+    const reply = buildDebugMessage(result, msg);
     if (reply === null) { return; } // Do not register None intents
     const channels = context.channels as Collection<string, TextChannel>;
     const talkChannels =  channels.filter((c) => c.id === process.env.HOME_CHANNEL_ID);

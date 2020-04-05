@@ -1,12 +1,18 @@
 import { Client, Collection, Message, TextChannel } from "discord.js";
 import { inject } from "inversify";
 import { fluentProvide } from "inversify-binding-decorators";
-import { PROVIDER } from "../constants/providers";
 import { SERVICE } from "../constants/services";
-import { LuisRecognizerProvider } from "../luis/luis.provider";
+import { LuisService } from "../luis/luis.provider";
 import { guard } from "./guard.decorator";
 import { notMe } from "./guards/author-not-me";
 import { contentNotEmpty } from "./guards/content-not-empty";
+import { INTENT_HANDLER } from "./intent.handler";
+import { buildDebugMessage } from "./message.handler";
+
+/**
+ * Represents a Discord onMessage handler
+ */
+export type DiscordMessageHandler = (msg: Message, client: Client) => void;
 
 /**
  * Represents a bot provider class that can provide
@@ -30,7 +36,7 @@ export class Neruko implements BotProvidable {
     private bot: Client;
 
     constructor(
-        @inject(PROVIDER.LuisRecognizer) private luisProvider: LuisRecognizerProvider
+        @inject(SERVICE.Luis) private luis: LuisService
     ) {
         const bot = this.bot = new Client();
         bot.on("ready", () => {
@@ -53,11 +59,19 @@ export class Neruko implements BotProvidable {
         notMe,
         contentNotEmpty
     )
-    private onMessage(msg: Message, client: Client): void {
-        const channels = this.bot.channels as Collection<string, TextChannel>;
+    private async onMessage(msg: Message, client: Client): Promise<void> {
+        const result = await this.luis.predictDiscordAsync(msg);
+
+        // Handle the intent
+        await INTENT_HANDLER[result.prediction.topIntent](msg);
+
+        // Output debug message
+        const reply = buildDebugMessage(result, msg);
+        if (reply === null) { return; } // Do not register None intents
+        const channels = client.channels as Collection<string, TextChannel>;
         const talkChannels =  channels.filter((c) => c.id === process.env.HOME_CHANNEL_ID);
         talkChannels.forEach((c) => {
-                c.send(this.bot.user.id);
+                c.send(reply);
             });
     }
 }
