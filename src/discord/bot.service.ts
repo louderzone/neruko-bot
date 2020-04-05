@@ -1,10 +1,8 @@
 import { Client, Collection, Message, TextChannel } from "discord.js";
 import { inject } from "inversify";
-import { buildProviderModule, fluentProvide } from "inversify-binding-decorators";
-import "reflect-metadata";
+import { fluentProvide } from "inversify-binding-decorators";
 import { PROVIDER } from "../constants/providers";
 import { SERVICE } from "../constants/services";
-import { container } from "../inversify.config";
 import { LuisRecognizerProvider } from "../luis/luis.provider";
 import { guard } from "./guard.decorator";
 import { notMe } from "./guards/not-me";
@@ -50,5 +48,3 @@ export class Neruko {
             });
     }
 }
-
-container.load(buildProviderModule());
