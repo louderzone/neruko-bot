@@ -1,4 +1,4 @@
-import { Client } from "discord.js";
+import { Client, Collection, Message, TextChannel } from "discord.js";
 import { inject } from "inversify";
 import { buildProviderModule, fluentProvide } from "inversify-binding-decorators";
 import "reflect-metadata";
@@ -6,7 +6,8 @@ import { PROVIDER } from "../constants/providers";
 import { SERVICE } from "../constants/services";
 import { container } from "../inversify.config";
 import { LuisRecognizerProvider } from "../luis/luis.provider";
-import { discordOnMessage } from "./message.handler";
+import { guard } from "./guard.decorator";
+import { notMe } from "./guards/not-me";
 
 /**
  * Represents the Neruko bot instance
@@ -26,7 +27,7 @@ export class Neruko {
             console.log(`Logged in as ${bot.user.tag}!`);
             console.log(`Output to: ${process.env.CHANNEL_ID}`);
         });
-        bot.on("message", (msg) => discordOnMessage(bot, msg, this.luisProvider));
+        bot.on("message", (msg) => this.onMessage(msg, bot));
         // Make sure Discord bot is logged in before anything.
         bot.login(process.env.DISCORD_TOKEN);
     }
@@ -36,6 +37,17 @@ export class Neruko {
      */
     getBot(): Client {
         return this.bot;
+    }
+
+    @guard(
+        notMe
+    )
+    private onMessage(msg: Message, client: Client): void {
+        const channels = this.bot.channels as Collection<string, TextChannel>;
+        const talkChannels =  channels.filter((c) => c.id === process.env.HOME_CHANNEL_ID);
+        talkChannels.forEach((c) => {
+                c.send(this.bot.user.id);
+            });
     }
 }
 
