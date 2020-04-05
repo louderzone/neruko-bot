@@ -3,6 +3,8 @@ import { inject } from "inversify";
 import { fluentProvide } from "inversify-binding-decorators";
 import { SERVICE } from "../constants/services";
 import { LuisService } from "../luis/luis.provider";
+import { command } from "./command.decorator";
+import { nrkReply, REPLY_COMMAND } from "./commands/nrk-reply";
 import { guard } from "./guard.decorator";
 import { notMe } from "./guards/author-not-me";
 import { contentNotEmpty } from "./guards/content-not-empty";
@@ -59,6 +61,7 @@ export class Neruko implements BotProvidable {
         notMe,
         contentNotEmpty
     )
+    @command({ prefix: REPLY_COMMAND }, nrkReply)
     private async onMessage(msg: Message, client: Client): Promise<void> {
         const result = await this.luis.predictDiscordAsync(msg);
 
