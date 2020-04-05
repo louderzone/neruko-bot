@@ -9,12 +9,23 @@ import { notMe } from "./guards/not-me";
 import { contentNotEmpty } from "./guards/content-not-empty";
 
 /**
+ * Represents a bot provider class that can provide
+ * a discord Bot instance
+ */
+export interface BotProvidable {
+    /**
+     * Gets the discord bot instance
+     */
+    getBot(): Client;
+}
+
+/**
  * Represents the Neruko bot instance
  */
 @fluentProvide(SERVICE.Bot)
     .inSingletonScope()
     .done()
-export class Neruko {
+export class Neruko implements BotProvidable {
 
     private bot: Client;
 
@@ -32,7 +43,7 @@ export class Neruko {
     }
 
     /**
-     * Gets the discord bot instance
+     * @inheritdoc
      */
     getBot(): Client {
         return this.bot;
