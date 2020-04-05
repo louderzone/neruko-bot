@@ -1,4 +1,4 @@
 export const SERVICE = {
-    Bot: Symbol.for("Bot"),
+    Bot: Symbol.for("BotService"),
     Luis: Symbol.for("LuisService")
 };
