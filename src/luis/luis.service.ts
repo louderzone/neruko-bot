@@ -1,5 +1,8 @@
 import { LUISRuntimeClient } from "@azure/cognitiveservices-luis-runtime";
-import { PredictionGetSlotPredictionResponse, PredictionRequest } from "@azure/cognitiveservices-luis-runtime/esm/models";
+import {
+    PredictionGetSlotPredictionResponse,
+    PredictionRequest
+} from "@azure/cognitiveservices-luis-runtime/esm/models";
 import { CognitiveServicesCredentials } from "@azure/ms-rest-azure-js";
 import { Message } from "discord.js";
 import { fluentProvide } from "inversify-binding-decorators";
