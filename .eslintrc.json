@@ -1,6 +1,6 @@
 {
     "extends": [
-        "eslint:recommended",
+        "./.eslintrc.cc.json",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended"
     ],
@@ -15,5 +15,7 @@
         "commonjs": true,
         "jest": true
     },
-    "rules": {}
+    "rules": { 
+        "prefer-rest-params": "off"
+    }
 }

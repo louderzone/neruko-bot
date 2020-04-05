@@ -1,18 +1,7 @@
 import {
-    PredictionGetSlotPredictionResponse,
-    PredictionRequest
+    PredictionGetSlotPredictionResponse
 } from "@azure/cognitiveservices-luis-runtime/esm/models";
-import { Client, Collection, Message, TextChannel } from "discord.js";
-import { LuisRecognizerProvider } from "../luis/luis.provider";
-import { INTENT_HANDLER } from "./intent.handler";
-
-const REPLY_COMMAND = "/nrk:reply ";
-
-const appId = process.env.LUIS_APP_ID;
-const slotName = process.env.LUIS_SLOT_NAME;
-const verbose = true;
-const showAllIntents = true;
-const log = false;
+import { Message } from "discord.js";
 
 /**
  * List of intents supported by the LUIS model
@@ -62,30 +51,11 @@ function getRunnerName(runnerContext: string[], msg: Message): string {
 }
 
 /**
- * Gets the prediction request object
- *
- * The method polish the discord message to
- * remove quotes, special characters and mentions
- * to improve the prediction result
- *
- * @param msg The full discord message object
- */
-function getPredictionRequest(msg: Message): PredictionRequest {
-    const query = msg.content
-        .split(/\r?\n/) // Split each line
-        .filter((m) => !m.startsWith(">")) // Ignore quotes
-        .map((m) => m.replace(/~~|\|\|/g, "")) // Replace the encapsulations
-                                             // as it seems to cause a lot of mistakes in luis
-        .join(", "); // Comma separate each sentence to improve prediction quality
-    return { query };
-}
-
-/**
  * Creates the debug message for LUIS detection
  *
  * @param response
  */
-function buildMessage(response: PredictionGetSlotPredictionResponse, msg: Message): string {
+export function buildDebugMessage(response: PredictionGetSlotPredictionResponse, msg: Message): string {
     const { topIntent, entities, intents }  = response.prediction;
     const intentName = INTENT_NAME[topIntent] || INTENT_NAME.default;
     if (intentName === INTENT_NAME.default) { return null; }
@@ -105,48 +75,4 @@ function buildMessage(response: PredictionGetSlotPredictionResponse, msg: Messag
     const debugMessage = `\`\`\`Triggered:${msg.content}\r\n${eventText}${topRankText}\r\n`
         + `意向\r\n=====\r\n${intentsText}\`\`\``;
     return `${intentText} ${scoreText}\r\n${debugMessage}`;
-}
-
-/**
- * Handles when a message is received from discord
- *
- * @param msg The discord message object
- * @param luisProvider The language understanding tool
- */
-export async function discordOnMessage(
-    context: Client,
-    msg: Message,
-    luisProvider: LuisRecognizerProvider
-): Promise<void> {
-    const { author , content, channel } = msg;
-
-    if (author.id === context.user.id) {
-        // Prevent from reading my own message
-        return;
-    }
-
-    if (content.startsWith(REPLY_COMMAND)) {
-        msg.delete();
-        await channel.send(content.substring(REPLY_COMMAND.length));
-        return;
-    }
-
-    if (content === "" || content === undefined || content === null) { return; } // Do not send if empty to save credits
-    const predictionRequest = getPredictionRequest(msg);
-    const client = await luisProvider();
-    const result = await client
-        .prediction
-        .getSlotPrediction(appId, slotName, predictionRequest, { verbose, showAllIntents, log });
-
-    // Handle the intent
-    await INTENT_HANDLER[result.prediction.topIntent](msg);
-
-    // Output debug message
-    const reply = buildMessage(result, msg);
-    if (reply === null) { return; } // Do not register None intents
-    const channels = context.channels as Collection<string, TextChannel>;
-    const talkChannels =  channels.filter((c) => c.id === process.env.HOME_CHANNEL_ID);
-    talkChannels.forEach((c) => {
-            c.send(reply);
-        });
 }
