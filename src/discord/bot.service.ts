@@ -2,7 +2,7 @@ import { Client, Collection, Message, TextChannel } from "discord.js";
 import { inject } from "inversify";
 import { fluentProvide } from "inversify-binding-decorators";
 import { SERVICE } from "../constants/services";
-import { LuisService } from "../luis/luis.provider";
+import { LuisService } from "../luis/luis.service";
 import { command } from "./command.decorator";
 import { nrkReply, REPLY_COMMAND } from "./commands/nrk-reply";
 import { guard } from "./guard.decorator";

@@ -6,4 +6,4 @@ export const container = new Container();
 import "./express/controllers.config";
 
 // Load Providers
-import "./luis/luis.provider";
+import "./luis/luis.service";
