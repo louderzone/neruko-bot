@@ -5,7 +5,12 @@ import { SERVICE } from "../constants/services";
 import { MongoDb } from "../database/mongodb.service";
 import { LuisService } from "../luis/luis.service";
 import { command } from "./command.decorator";
-import { BOOST_REGISTER_COMMAND, BOOST_UNREGISTER_COMMAND, boostRegister, boostUnregister } from "./commands/boost-register";
+import {
+    BOOST_REGISTER_COMMAND,
+    BOOST_UNREGISTER_COMMAND,
+    boostRegister,
+    boostUnregister
+} from "./commands/boost-register";
 import { nrkReply, REPLY_COMMAND } from "./commands/nrk-reply";
 import { guard } from "./guard.decorator";
 import { notMe } from "./guards/author-not-me";
