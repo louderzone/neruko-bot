@@ -2,6 +2,12 @@ import { RichEmbed } from "discord.js";
 import { DiscordMessageHandler, MessageHandlerArguments } from "discord/bot.service";
 import { NitroBoosterInterface } from "./nitro-booster-interface";
 
+/**
+ * Booster implementation for Emoji function
+ *
+ * The booster virtually Nitro boosts a member without paying
+ * Allowing them to use stickers not permitted without Nitro boost
+ */
 export class EmojiBooster implements NitroBoosterInterface {
     /**
      * The rule to search for an emoji
