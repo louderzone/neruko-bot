@@ -25,11 +25,15 @@ async function setBoost(
     boosted: boolean,
     msg: Message
 ): Promise<FindAndModifyWriteOpResultObject<User>> {
+    const { id, tag: username } = msg.author;
     return users.findOneAndUpdate({
         _id: msg.author.id
     }, {
         $set: { boosted },
-        $setOnInsert: { _id: msg.author.id }
+        $setOnInsert: {
+            _id: id,
+            username
+        }
     }, {
         returnOriginal: true,
         upsert: true

@@ -8,6 +8,11 @@ export class User {
     _id: string;
 
     /**
+     * The unique name of the user
+     */
+    username: string;
+
+    /**
      * Gets or sets if Neruko should boost this user
      */
     boosted: boolean;
