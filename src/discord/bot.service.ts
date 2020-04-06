@@ -14,7 +14,27 @@ import { buildDebugMessage } from "./message.handler";
 /**
  * Represents a Discord onMessage handler
  */
-export type DiscordMessageHandler = (msg: Message, client: Client) => void;
+export type DiscordMessageHandler = (args: MessageHandlerArguments) => void;
+
+/**
+ * Represents the arguments supplied to a Discord OnMessage handler
+ */
+export interface MessageHandlerArguments {
+    /**
+     * Gets the discord message
+     */
+    readonly msg: Message;
+
+    /**
+     * Gets the Bot Client instance
+     */
+    readonly client: Client;
+
+    /**
+     * Gets the Mongo DB instance
+     */
+    readonly db: MongoDb;
+}
 
 /**
  * Represents a bot provider class that can provide
@@ -45,7 +65,10 @@ export class Neruko implements BotProvidable {
             console.log(`Logged in as ${bot.user.tag}!`);
             console.log(`Output to: ${process.env.CHANNEL_ID}`);
         });
-        bot.on("message", (msg) => this.onMessage(msg, bot));
+        bot.on("message", (msg) => this.onMessage({
+            msg,
+            client: bot
+        }));
         // Make sure Discord bot is logged in before anything.
         bot.login(process.env.DISCORD_TOKEN);
     }
@@ -62,7 +85,8 @@ export class Neruko implements BotProvidable {
         contentNotEmpty
     )
     @command({ prefix: REPLY_COMMAND }, nrkReply)
-    private async onMessage(msg: Message, client: Client): Promise<void> {
+    private async onMessage(options: MessageHandlerArguments): Promise<void> {
+        const { msg, client } = options;
         const { author, content } = msg;
         if (author.id === "") {
             let replyText = content;

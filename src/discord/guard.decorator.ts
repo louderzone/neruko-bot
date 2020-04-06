@@ -1,10 +1,9 @@
-import { Client, Message } from "discord.js";
-import { DiscordMessageHandler } from "./bot.service";
+import { DiscordMessageHandler, MessageHandlerArguments } from "./bot.service";
 
 /**
  * Represents a guard function
  */
-type Func = (msg: Message, client: Client) => boolean;
+type Func = (options: MessageHandlerArguments) => boolean;
 
 /**
  * Decorator for guarding a message from being processed
@@ -19,8 +18,8 @@ export function guard(...fn: Func[]) {
         descriptor: TypedPropertyDescriptor<DiscordMessageHandler>
     ): void => {
         const method = descriptor.value;
-        descriptor.value = function(...args): void {
-            if (!fn.every((check) => check(args[0], args[1]))) {
+        descriptor.value = function(args): void {
+            if (!fn.every((check) => check(args))) {
                 return null;
             }
             return method.apply(this, arguments);

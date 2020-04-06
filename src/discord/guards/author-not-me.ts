@@ -1,4 +1,4 @@
-import { Client, Message } from "discord.js";
+import { MessageHandlerArguments } from "discord/bot.service";
 
 /**
  * Checks if the user is not the bot herself
@@ -6,6 +6,7 @@ import { Client, Message } from "discord.js";
  * @param msg
  * @param client
  */
-export function notMe(msg: Message, client: Client): boolean {
+export function notMe(args: MessageHandlerArguments): boolean {
+    const { msg, client } = args;
     return msg.author.id !== client.user.id;
 }
