@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { MessageHandlerArguments } from "discord/bot.service";
 
 /**
  * Checks if the user is not the bot herself
@@ -6,8 +6,8 @@ import { Message } from "discord.js";
  * @param msg
  * @param client
  */
-export function contentNotEmpty(msg: Message): boolean {
-    const { content } = msg;
+export function contentNotEmpty(args: MessageHandlerArguments): boolean {
+    const { content } = args.msg;
     return content !== ""
         && content !== undefined
         && content !== null;

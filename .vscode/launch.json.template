@@ -17,6 +17,8 @@
                 "${workspaceFolder}/dist/**/*.js"
             ],
             "env": {
+                "MONGO_CONNECTION_STRING": "<Your connection string for MongoDb>",
+                "MONGO_DBNAME": "<Your mongo db databasename>",
                 "LUIS_APP_ID": "<The id of you model you will use>",
                 "LUIS_AUTHORING_KEY": "<Your LUIS prediction key>",
                 "LUIS_ENDPOINT": "<The LUIS endpoint you will use>",

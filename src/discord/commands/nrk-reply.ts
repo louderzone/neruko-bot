@@ -1,8 +1,14 @@
-import { Message } from "discord.js";
+import { MessageHandlerArguments } from "discord/bot.service";
 
 export const REPLY_COMMAND = "/nrk:reply ";
 
-export async function nrkReply(msg: Message): Promise<void> {
+/**
+ * Handles when /nrk:reply command is received
+ *
+ * @param msg The discord message received
+ */
+export async function nrkReply(args: MessageHandlerArguments): Promise<void> {
+    const { msg } = args;
     msg.delete();
     await msg.channel.send(msg.content.substring(REPLY_COMMAND.length));
 }

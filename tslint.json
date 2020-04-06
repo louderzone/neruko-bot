@@ -11,6 +11,14 @@
         "member-access": [ true, "no-public" ],
         "object-literal-sort-keys": false,
         "trailing-comma": false,
-        "interface-name": [ true, "never-prefix" ]
+        "interface-name": [ true, "never-prefix" ],
+        "variable-name": {
+            "options": [
+              "require-const-for-all-caps",
+              "ban-keywords",
+              "check-format",
+              "allow-leading-underscore"
+            ]
+          }
     }
 }
