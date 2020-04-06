@@ -1,6 +1,7 @@
 import { fluentProvide } from "inversify-binding-decorators";
 import { Collection, Db, MongoClient } from "mongodb";
 import { SERVICE } from "../constants/services";
+import { User } from "./models/user";
 
 // Connection URL
 const uri = process.env.MONGO_CONNECTION_STRING;
@@ -31,7 +32,7 @@ export class MongoDb {
     /**
      * Gets the user collection
      */
-    getUsers(): Collection {
-        return this.db.collection("users");
+    getUsers(): Collection<User> {
+        return this.db.collection<User>("users");
     }
 }
