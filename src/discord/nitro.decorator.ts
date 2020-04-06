@@ -19,7 +19,7 @@ export function nitro() {
         descriptor: TypedPropertyDescriptor<DiscordMessageHandler>
     ): void => {
         const method = descriptor.value;
-        descriptor.value = function(args): void {
+        descriptor.value = async function(args): Promise<void> {
             const booster = NITRO_SERVICES.find(
                 async (b) => (
                     await b.isApplicableAsync(args)

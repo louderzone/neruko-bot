@@ -17,7 +17,7 @@ import { nitro } from "./nitro.decorator";
 /**
  * Represents a Discord onMessage handler
  */
-export type DiscordMessageHandler = (args: MessageHandlerArguments) => void;
+export type DiscordMessageHandler = (args: MessageHandlerArguments) => Promise<void>;
 
 /**
  * Represents the arguments supplied to a Discord OnMessage handler

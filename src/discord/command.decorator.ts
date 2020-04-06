@@ -16,7 +16,7 @@ export function command(options: CommandOptions, fn: DiscordMessageHandler) {
         descriptor: TypedPropertyDescriptor<DiscordMessageHandler>
     ): void => {
         const method = descriptor.value;
-        descriptor.value = function(args): void {
+        descriptor.value = async function(args): Promise<void> {
             if (args.msg.content.startsWith(options.prefix)) {
                 return fn.apply(this, arguments);
             }

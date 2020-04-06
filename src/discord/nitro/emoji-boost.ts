@@ -11,7 +11,7 @@ export class EmojiBooster implements NitroBoosterInterface {
     /**
      * @inheritdoc
      */
-    func: DiscordMessageHandler = (args) => {
+    func: DiscordMessageHandler = async (args) => {
         const { msg } = args;
         const { content, author } = msg;
         let replyText = content;
