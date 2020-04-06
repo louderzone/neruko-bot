@@ -1,4 +1,4 @@
-import { Client, Collection, Message, RichEmbed, TextChannel } from "discord.js";
+import { Client, Collection, Message, TextChannel } from "discord.js";
 import { inject } from "inversify";
 import { fluentProvide } from "inversify-binding-decorators";
 import { SERVICE } from "../constants/services";
