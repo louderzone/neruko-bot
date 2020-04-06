@@ -4,7 +4,7 @@ import { fluentProvide } from "inversify-binding-decorators";
 import { SERVICE } from "../constants/services";
 import { MongoDb } from "../database/mongodb.service";
 import { LuisService } from "../luis/luis.service";
-import { command } from "./command.decorator";
+import { command, fixedCommand } from "./command.decorator";
 import {
     BOOST_REGISTER_COMMAND,
     BOOST_UNREGISTER_COMMAND,
@@ -95,8 +95,8 @@ export class Neruko implements BotProvidable {
         contentNotEmpty
     )
     @command({ prefix: REPLY_COMMAND }, nrkReply)
-    @command({ prefix: BOOST_REGISTER_COMMAND }, boostRegister)
-    @command({ prefix: BOOST_UNREGISTER_COMMAND }, boostUnregister)
+    @fixedCommand({ command: BOOST_REGISTER_COMMAND }, boostRegister)
+    @fixedCommand({ command: BOOST_UNREGISTER_COMMAND }, boostUnregister)
     @nitro()
     private async onMessage(options: MessageHandlerArguments): Promise<void> {
         const { msg, client } = options;
