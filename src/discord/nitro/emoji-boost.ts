@@ -48,6 +48,10 @@ export class EmojiBooster implements NitroBoosterInterface {
      * @inheritdoc
      */
     async isActiveAsync(args: MessageHandlerArguments): Promise<boolean> {
-        return await args.db.getUsers().findOne({ _id: "329960570076004353", boosted: true }) !== null;
+        return await args.db.getUsers()
+            .findOne({
+                _id: args.msg.author.id,
+                boosted: true
+            }) !== null;
     }
 }
