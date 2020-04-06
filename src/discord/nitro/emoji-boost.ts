@@ -12,7 +12,7 @@ export class EmojiBooster implements NitroBoosterInterface {
     /**
      * The rule to search for an emoji
      */
-    private emojiSearch = /(?<!<):([A-z0-9-_]+):/g;
+    private emojiSearch = /(?<!<)(?<!<a):([A-z0-9-_]+):/g;
 
     /**
      * @inheritdoc
