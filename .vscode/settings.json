@@ -3,5 +3,6 @@
         "Neruko",
         "inversify",
         "upsert"
-    ]
+    ],
+    "prettier.tabWidth": 4
 }

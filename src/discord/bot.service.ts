@@ -12,6 +12,7 @@ import { notMe } from "./guards/author-not-me";
 import { contentNotEmpty } from "./guards/content-not-empty";
 import { INTENT_HANDLER } from "./intent.handler";
 import { buildDebugMessage } from "./message.handler";
+import { nitro } from "./nitro.decorator";
 
 /**
  * Represents a Discord onMessage handler
@@ -91,27 +92,9 @@ export class Neruko implements BotProvidable {
     @command({ prefix: REPLY_COMMAND }, nrkReply)
     @command({ prefix: BOOST_REGISTER_COMMAND }, boostRegister)
     @command({ prefix: BOOST_UNREGISTER_COMMAND }, boostUnregister)
+    @nitro()
     private async onMessage(options: MessageHandlerArguments): Promise<void> {
         const { msg, client } = options;
-        const { author, content } = msg;
-        if (author.id === "") {
-            let replyText = content;
-            const searchForEmojis = /(?<!<):([A-z0-9-_]+):/g;
-            const emojisFound = content.match(searchForEmojis);
-            if (emojisFound === null) { return; } // No emoji is found in this text
-            emojisFound.forEach((emoteString) => {
-                const name = emoteString.replace(/:/g, "");
-                const emoji = msg.guild.emojis.find((e) => e.name === name);
-                replyText = replyText.replace(emoteString, emoji.toString());
-            });
-            msg.delete();
-            msg.channel.send(`${replyText}`, new RichEmbed({
-                color: 13956093,
-                description: `<@${author.id}>`
-            }));
-            return;
-        }
-
         const result = await this.luis.predictDiscordAsync(msg);
 
         // Handle the intent
