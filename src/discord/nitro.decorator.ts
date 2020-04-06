@@ -1,3 +1,4 @@
+import { findAsync } from "../utils/find-async";
 import { DiscordMessageHandler } from "./bot.service";
 import { EmojiBooster } from "./nitro/emoji-boost";
 
@@ -20,7 +21,8 @@ export function nitro() {
     ): void => {
         const method = descriptor.value;
         descriptor.value = async function(args): Promise<void> {
-            const booster = NITRO_SERVICES.find(
+            const booster = await findAsync(
+                NITRO_SERVICES,
                 async (b) => (
                     await b.isApplicableAsync(args)
                     && await b.isActiveAsync(args)
