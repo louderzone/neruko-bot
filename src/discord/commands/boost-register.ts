@@ -37,16 +37,31 @@ async function setBoost(
 }
 
 /**
+ * Sets the boost setting and react to user after complete
+ *
+ * @param args Discord handler arguments
+ * @param boosted Sets the user to boosted or not boosted
+ * @param completedReaction Which emoji to react after complete
+ */
+async function boostSetter(
+    args: MessageHandlerArguments,
+    boosted: boolean,
+    completedReaction: string
+): Promise<void> {
+    const { msg, db } = args;
+    const users = db.getUsers();
+    await setBoost(users, boosted, msg);
+    // Notify user that the operation is completed successfully
+    await msg.react(completedReaction);
+}
+
+/**
  * Handles when boost register command is received
  *
  * @param msg The discord message received
  */
 export async function boostRegister(args: MessageHandlerArguments): Promise<void> {
-    const { msg, db } = args;
-    const users = db.getUsers();
-    await setBoost(users, true, msg);
-    // Notify user that the operation is completed successfully
-    await msg.react("👌🏻");
+    return boostSetter(args, true, "👌🏻");
 }
 
 /**
@@ -55,9 +70,5 @@ export async function boostRegister(args: MessageHandlerArguments): Promise<void
  * @param msg The discord message received
  */
 export async function boostUnregister(args: MessageHandlerArguments): Promise<void> {
-    const { msg, db } = args;
-    const users = db.getUsers();
-    await setBoost(users, false, msg);
-    // Notify user that the operation is completed successfully
-    await msg.react("🥺");
+    return boostSetter(args, false, "🥺");
 }
