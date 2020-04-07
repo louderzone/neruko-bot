@@ -14,6 +14,19 @@ import { SpeedForm } from "./announce/speed.form";
  */
 export const ANNOUNCE_PURPOSE_TW_ONBOARD = "tw-15";
 
+/**
+ * Represents the announcement purpose for calling
+ * Japanese member to prepare on board 15 minutes
+ * before their subscribed session
+ */
+export const ANNOUNCE_PURPOSE_JP_ONBOARD = "jp-15";
+
+/**
+ * Represents the announcement purpose for calling help
+ * if at least one of the members has disappeared from the shift
+ */
+export const ANNOUNCE_PURPOSE_MISSING_MEMBER = "member-missing";
+
 @controller("/announce")
 export class AnnounceController extends BaseHttpController {
     constructor(
