@@ -1,6 +1,7 @@
 import { fluentProvide } from "inversify-binding-decorators";
 import { Collection, Db, MongoClient } from "mongodb";
 import { SERVICE } from "../constants/services";
+import { BotState } from "./models/bot-state";
 import { User } from "./models/user";
 
 // Connection URL
@@ -34,5 +35,12 @@ export class MongoDb {
      */
     getUsers(): Collection<User> {
         return this.db.collection<User>("users");
+    }
+
+    /**
+     * Gets the bot statuses collection
+     */
+    getStatuses(): Collection<BotState> {
+        return this.db.collection<BotState>("bot-states");
     }
 }

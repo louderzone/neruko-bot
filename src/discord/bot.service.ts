@@ -11,6 +11,7 @@ import {
     boostRegister,
     boostUnregister
 } from "./commands/boost-register";
+import { NERUKO_REGISTER_COMMAND, nrkRegister } from "./commands/nrk-register";
 import { nrkReply, REPLY_COMMAND } from "./commands/nrk-reply";
 import { guard } from "./guard.decorator";
 import { notMe } from "./guards/author-not-me";
@@ -18,6 +19,8 @@ import { contentNotEmpty } from "./guards/content-not-empty";
 import { INTENT_HANDLER } from "./intent.handler";
 import { buildDebugMessage } from "./message.handler";
 import { nitro } from "./nitro.decorator";
+
+export const NERUKO_NAME = "neruko";
 
 /**
  * Represents a Discord onMessage handler
@@ -63,6 +66,7 @@ export interface BotProvidable {
     .done()
 export class Neruko implements BotProvidable {
 
+    // The discord bot client
     private bot: Client;
 
     constructor(
@@ -79,7 +83,6 @@ export class Neruko implements BotProvidable {
             client: bot,
             db
         }));
-        // Make sure Discord bot is logged in before anything.
         bot.login(process.env.DISCORD_TOKEN);
     }
 
@@ -97,6 +100,7 @@ export class Neruko implements BotProvidable {
     @command({ prefix: REPLY_COMMAND }, nrkReply)
     @fixedCommand({ command: BOOST_REGISTER_COMMAND }, boostRegister)
     @fixedCommand({ command: BOOST_UNREGISTER_COMMAND }, boostUnregister)
+    @fixedCommand({ command: NERUKO_REGISTER_COMMAND }, nrkRegister)
     @nitro()
     private async onMessage(options: MessageHandlerArguments): Promise<void> {
         const { msg, client } = options;
