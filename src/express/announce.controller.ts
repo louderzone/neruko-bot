@@ -42,35 +42,37 @@ export class AnnounceController extends BaseHttpController {
      * @param body
      */
     @httpPost("/shift")
-    private shift(
+    private async shift(
         @requestBody() body: ShiftForm
-    ): interfaces.IHttpActionResult {
+    ): Promise<interfaces.IHttpActionResult> {
         const channels = this.neruko.getBot().channels as Collection<string, TextChannel>;
-        const talkChannels =  channels.filter((c) => c.id === body.cid);
-        talkChannels.forEach(async (c) => {
-            const msg = (await c.send(body.msg)) as Message;
-            if (body.purpose !== ANNOUNCE_PURPOSE_TW_ONBOARD) { return; }
+        const targetChannel =  channels.find((c) => c.id === body.cid);
+        if (targetChannel === undefined) { return this.badRequest(); } // Channel not found
 
-            // Updates the last announce statistics after announcement
-            // On board only Taiwanese members
-            await this.db.getStatuses().findOneAndUpdate({
-                name: NERUKO_NAME,
+        const msg = (await targetChannel.send(body.msg)) as Message;
+        if (body.purpose !== ANNOUNCE_PURPOSE_TW_ONBOARD) { return this.statusCode(200); }
+
+        // Updates the last announce statistics after announcement
+        // On board only Taiwanese members
+        await this.db.getStatuses().findOneAndUpdate({
+            name: NERUKO_NAME,
+            lastAnnounce: {
+                purpose: ANNOUNCE_PURPOSE_TW_ONBOARD
+            }
+        }, {
+            $set: {
                 lastAnnounce: {
+                    id: msg.id,
+                    responded: 1,
+                    declined: 1.,
                     purpose: ANNOUNCE_PURPOSE_TW_ONBOARD
                 }
-            }, {
-                $set: {
-                    lastAnnounce: {
-                        id: msg.id,
-                        responded: 1,
-                        declined: 1.,
-                        purpose: ANNOUNCE_PURPOSE_TW_ONBOARD
-                    }
-                }
-            });
-            await msg.react("👌🏻");
-            await msg.react("❌");
+            }
         });
+
+        await msg.react("👌🏻");
+        await msg.react("❌");
+
         return this.statusCode(200);
     }
 
