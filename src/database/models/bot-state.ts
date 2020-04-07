@@ -25,15 +25,20 @@ interface AnnouncementThread {
     /**
      * Gets or sets the Unique ID of the discord message
      */
-    id: string;
+    id?: string;
+
+    /**
+     * Gets or sets the purpose of the announcement
+     */
+    purpose?: string;
 
     /**
      * Gets or sets the number of pusher responded to the message
      */
-    responded: number;
+    responded?: number;
 
     /**
      * Gets or sets the number of pusher replied with not free
      */
-    declined: number;
+    declined?: number;
 }

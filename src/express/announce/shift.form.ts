@@ -12,4 +12,9 @@ export class ShiftForm {
      * The message of the announcement
      */
     msg: string;
+
+    /**
+     * Gets or sets the purpose of the announcement
+     */
+    purpose?: string;
 }

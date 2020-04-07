@@ -7,6 +7,13 @@ import { Neruko, NERUKO_NAME } from "../discord/bot.service";
 import { ShiftForm } from "./announce/shift.form";
 import { SpeedForm } from "./announce/speed.form";
 
+/**
+ * Represents the announcement purpose for calling
+ * Taiwanese member to prepare on board 15 minutes
+ * before their subscribed session
+ */
+export const ANNOUNCE_PURPOSE_TW_ONBOARD = "tw-15";
+
 @controller("/announce")
 export class AnnounceController extends BaseHttpController {
     constructor(
@@ -29,15 +36,22 @@ export class AnnounceController extends BaseHttpController {
         const talkChannels =  channels.filter((c) => c.id === body.cid);
         talkChannels.forEach(async (c) => {
             const msg = (await c.send(body.msg)) as Message;
+            if (body.purpose !== ANNOUNCE_PURPOSE_TW_ONBOARD) { return; }
+
             // Updates the last announce statistics after announcement
+            // On board only Taiwanese members
             await this.db.getStatuses().findOneAndUpdate({
-                name: NERUKO_NAME
+                name: NERUKO_NAME,
+                lastAnnounce: {
+                    purpose: ANNOUNCE_PURPOSE_TW_ONBOARD
+                }
             }, {
                 $set: {
                     lastAnnounce: {
                         id: msg.id,
                         responded: 1,
-                        declined: 1
+                        declined: 1.,
+                        purpose: ANNOUNCE_PURPOSE_TW_ONBOARD
                     }
                 }
             });
