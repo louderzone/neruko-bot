@@ -16,6 +16,11 @@ export class AnnounceController extends BaseHttpController {
         super();
     }
 
+    /**
+     * Web hook receiving announcement data regarding to shift management
+     *
+     * @param body
+     */
     @httpPost("/shift")
     private shift(
         @requestBody() body: ShiftForm
@@ -53,6 +58,11 @@ export class AnnounceController extends BaseHttpController {
         return this.json(status.lastAnnounce);
     }
 
+    /**
+     * Web hook receiving announcement data regarding to speed alert
+     *
+     * @param body
+     */
     @httpPost("/speed")
     private speed(
         @requestBody() body: SpeedForm
