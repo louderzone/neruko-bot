@@ -1,8 +1,9 @@
-import { Client, Collection, Message, TextChannel } from "discord.js";
+import { Client, Collection, Message, MessageReaction, TextChannel, User } from "discord.js";
 import { inject } from "inversify";
 import { fluentProvide } from "inversify-binding-decorators";
 import { SERVICE } from "../constants/services";
 import { MongoDb } from "../database/mongodb.service";
+import { ANNOUNCE_PURPOSE_TW_ONBOARD } from "../express/announce.controller";
 import { LuisService } from "../luis/luis.service";
 import { command, fixedCommand } from "./command.decorator";
 import {
@@ -19,6 +20,7 @@ import { contentNotEmpty } from "./guards/content-not-empty";
 import { INTENT_HANDLER } from "./intent.handler";
 import { buildDebugMessage } from "./message.handler";
 import { nitro } from "./nitro.decorator";
+import { DECLINE_REACTION, OK_REACTION } from "./reactions";
 
 export const NERUKO_NAME = "neruko";
 
@@ -91,6 +93,35 @@ export class Neruko implements BotProvidable {
      */
     getBot(): Client {
         return this.bot;
+    }
+
+    /**
+     * Subscribe to a message for reaction then push the result to database
+     *
+     * @param msg
+     * @param time
+     */
+    async subscribeToMessage(msg: Message, time: number): Promise<void> {
+        const filter = (reaction: MessageReaction, user: User): boolean => {
+            return [OK_REACTION, DECLINE_REACTION].includes(reaction.emoji.name) && user.id === msg.author.id;
+        };
+
+        await msg.awaitReactions(filter, { max: 5, time });
+        const { reactions } = msg;
+        const responded = reactions.find((r) => r.emoji.name === OK_REACTION).users.size - 1;
+        const declined = reactions.find((r) => r.emoji.name === DECLINE_REACTION).users.size - 1;
+        await this.db.getStatuses().findOneAndUpdate({
+            name: NERUKO_NAME,
+        }, {
+            $set: {
+                lastAnnounce: {
+                    id: msg.id,
+                    responded,
+                    declined,
+                    purpose: ANNOUNCE_PURPOSE_TW_ONBOARD
+                }
+            }
+        });
     }
 
     @guard(
