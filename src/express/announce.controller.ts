@@ -1,6 +1,6 @@
 import { Collection, Message, TextChannel } from "discord.js";
 import { inject } from "inversify";
-import { BaseHttpController, controller, httpPost, interfaces, requestBody } from "inversify-express-utils";
+import { BaseHttpController, controller, httpGet, httpPost, interfaces, requestBody } from "inversify-express-utils";
 import { SERVICE } from "../constants/services";
 import { MongoDb } from "../database/mongodb.service";
 import { Neruko, NERUKO_NAME } from "../discord/bot.service";
@@ -40,6 +40,17 @@ export class AnnounceController extends BaseHttpController {
             msg.react("❌");
         });
         return this.statusCode(200);
+    }
+
+    /**
+     * Endpoint retrieving the last announcement statistics
+     */
+    @httpGet("/stat")
+    private async stat(): Promise<interfaces.IHttpActionResult> {
+        const status = await this.db.getStatuses().findOne({
+            name: NERUKO_NAME
+        });
+        return this.json(status.lastAnnounce);
     }
 
     @httpPost("/speed")
