@@ -36,8 +36,8 @@ export class AnnounceController extends BaseHttpController {
                     }
                 }
             });
-            msg.react("👌🏻");
-            msg.react("❌");
+            await msg.react("👌🏻");
+            await msg.react("❌");
         });
         return this.statusCode(200);
     }
