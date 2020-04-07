@@ -5,7 +5,7 @@ export const REPLY_COMMAND = "/nrk:reply ";
 /**
  * Handles when /nrk:reply command is received
  *
- * @param msg The discord message received
+ * @param args The handler arguments
  */
 export async function nrkReply(args: MessageHandlerArguments): Promise<void> {
     const { msg } = args;
