@@ -56,9 +56,6 @@ export class AnnounceController extends BaseHttpController {
         // On board only Taiwanese members
         await this.db.getStatuses().findOneAndUpdate({
             name: NERUKO_NAME,
-            lastAnnounce: {
-                purpose: ANNOUNCE_PURPOSE_TW_ONBOARD
-            }
         }, {
             $set: {
                 lastAnnounce: {
