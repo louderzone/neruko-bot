@@ -1,8 +1,13 @@
 language: node_js
 node_js:
-  - "10"
-
+- '10'
 before_script:
-  - npm uninstall typescript --no-save
-  - npm install
-  - npm run build
+- npm uninstall typescript --no-save
+- npm install
+- npm run build
+deploy:
+  provider: heroku
+  api_key:
+    secure: osBSK+7yYN1jjDUPx5x9cMwSBfKFhSl6eb36NE8NxO9aGpoX9Gf5FCVcWUltRXzFXcxRl3mbhYl0pJhIba9DxvJab7nVcQKTfCk2YLUpkuJxxPiC2mNE9IW6R9qxeRg3NB7Zz9Og2UZ0dhWva/bfA5kmY6jeFhlflgIx4nXtC1+rMfyEhPevrwickT+TQB6uej2cWIBNeB1505/aO26xmhxgqSckWnY7BMSQVDSke2i35niLxM/75tPx15w2o0wrkPnHzOdnGQth8iGrfXn5sngyTp4t5fIHR0O7tVQm/gsOsAT20hUH+aU3we3dMRLtZ3W9qgRNVYF8aPL88hSMYT6P6DdZk+k4tqpuNSh4eE2L7NA3pdRr3UDdfo4wLfevP8f6GgHb5PnqtPL882DllZujxkcnUOYMQ4xS8uXcCo7ne9SdFv+RPJ0UXvMQc5TVE3Kz6XHH8nsxJxGAIc0/996Y4TkPNx+VLvUzORM7KIY4x2+XBzbkZwNgIlmIIKb3g90aZSZLfsHhCd6DNhKI3sCJySF+Rc2TdP0J+ZBrNSq5cPmnomB1TnozZT8Vcz0LTv+SfEPOncb+FZ17D0iOh4WGPhHsKRWC5T5CdaqeufUlYqKYxS/6+zNVTkw6QYgD/VuJHQDappjOE8klsx7ZWqGOD9+pCfzRpvLTxQMqcHY=
+  app:
+    feature/deploy-heroku: neruko
