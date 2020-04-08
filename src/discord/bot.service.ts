@@ -120,8 +120,12 @@ export class Neruko implements BotProvidable {
 
         await msg.awaitReactions(filter, { max: 5, time });
         const { reactions } = msg;
-        const responded = reactions.resolve(OK_REACTION).users.cache.size - 1;
-        const declined = reactions.resolve(DECLINE_REACTION).users.cache.size - 1;
+        const responded = reactions
+            .resolve(OK_REACTION)
+            .users.cache.size - 1;
+        const declined = reactions
+            .resolve(DECLINE_REACTION)
+            .users.cache.size - 1;
         await this.db.getStatuses().findOneAndUpdate({
             name: NERUKO_NAME,
         }, {
