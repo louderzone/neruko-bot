@@ -1,8 +1,9 @@
-import { Client, Collection, Message, TextChannel } from "discord.js";
+import { Client, Collection, Message, MessageReaction, TextChannel, User } from "discord.js";
 import { inject } from "inversify";
 import { fluentProvide } from "inversify-binding-decorators";
 import { SERVICE } from "../constants/services";
 import { MongoDb } from "../database/mongodb.service";
+import { ANNOUNCE_PURPOSE_TW_ONBOARD } from "../express/announce.controller";
 import { LuisService } from "../luis/luis.service";
 import { command, fixedCommand } from "./command.decorator";
 import {
@@ -11,6 +12,7 @@ import {
     boostRegister,
     boostUnregister
 } from "./commands/boost-register";
+import { NERUKO_REGISTER_COMMAND, nrkRegister } from "./commands/nrk-register";
 import { nrkReply, REPLY_COMMAND } from "./commands/nrk-reply";
 import { guard } from "./guard.decorator";
 import { notMe } from "./guards/author-not-me";
@@ -18,6 +20,9 @@ import { contentNotEmpty } from "./guards/content-not-empty";
 import { INTENT_HANDLER } from "./intent.handler";
 import { buildDebugMessage } from "./message.handler";
 import { nitro } from "./nitro.decorator";
+import { DECLINE_REACTION, OK_REACTION } from "./reactions";
+
+export const NERUKO_NAME = "neruko";
 
 /**
  * Represents a Discord onMessage handler
@@ -63,6 +68,7 @@ export interface BotProvidable {
     .done()
 export class Neruko implements BotProvidable {
 
+    // The discord bot client
     private bot: Client;
 
     constructor(
@@ -79,7 +85,6 @@ export class Neruko implements BotProvidable {
             client: bot,
             db
         }));
-        // Make sure Discord bot is logged in before anything.
         bot.login(process.env.DISCORD_TOKEN);
     }
 
@@ -90,6 +95,35 @@ export class Neruko implements BotProvidable {
         return this.bot;
     }
 
+    /**
+     * Subscribe to a message for reaction then push the result to database
+     *
+     * @param msg
+     * @param time
+     */
+    async subscribeToMessage(msg: Message, time: number): Promise<void> {
+        const filter = (reaction: MessageReaction, user: User): boolean => {
+            return [OK_REACTION, DECLINE_REACTION].includes(reaction.emoji.name) && user.id === msg.author.id;
+        };
+
+        await msg.awaitReactions(filter, { max: 5, time });
+        const { reactions } = msg;
+        const responded = reactions.find((r) => r.emoji.name === OK_REACTION).users.size - 1;
+        const declined = reactions.find((r) => r.emoji.name === DECLINE_REACTION).users.size - 1;
+        await this.db.getStatuses().findOneAndUpdate({
+            name: NERUKO_NAME,
+        }, {
+            $set: {
+                lastAnnounce: {
+                    id: msg.id,
+                    responded,
+                    declined,
+                    purpose: ANNOUNCE_PURPOSE_TW_ONBOARD
+                }
+            }
+        });
+    }
+
     @guard(
         notMe,
         contentNotEmpty
@@ -97,6 +131,7 @@ export class Neruko implements BotProvidable {
     @command({ prefix: REPLY_COMMAND }, nrkReply)
     @fixedCommand({ command: BOOST_REGISTER_COMMAND }, boostRegister)
     @fixedCommand({ command: BOOST_UNREGISTER_COMMAND }, boostUnregister)
+    @fixedCommand({ command: NERUKO_REGISTER_COMMAND }, nrkRegister)
     @nitro()
     private async onMessage(options: MessageHandlerArguments): Promise<void> {
         const { msg, client } = options;
