@@ -3,6 +3,7 @@
         "module": "commonjs",
         "target": "es6",
         "sourceMap": true,
+        "outDir": "./dist",
         "types": ["reflect-metadata"],
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true

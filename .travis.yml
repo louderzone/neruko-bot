@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+- '10'
+before_script:
+- npm uninstall typescript --no-save
+- npm install
+- npm run build
+deploy:
+  provider: heroku
+  api_key:
+    secure: PigaR90TK17gpWL/F7v6EcXc05ou8tWpuHuJ4IRw8OjvPIeUYxCZrNZVzXb69wE2ePgrHC0ifT4ArTOOFTD1RsUwKRuje4/YdJfLdDzqx4lN5QFmXt3ClEkr/ZtLAIOz1r05Tx9NyWE4WO6DBHTqR/7jB+vgITywjEXjodNUFigAiYJhfdHaIo3fKuez6WsH8t03SyOlATZMtSaXtG/ALdvh9pFLPG5J4EUhxmVABWRyAdUCFAV/HKSQZ36QiYADTYng9v6PRXn/hhkyn/HvcWh42DBLguiTy+PhKyDao7G209OHl/SS9D55/DnuVVY+FUg2iCeREUwBoZ+r244M/aqGbTTnp58QUjc5MVxEt+ZtEbgVNqYBXro3f0EDpgVJ2NYNZWaOnOxOE3XThpHYxY2CCDpp/4rEbGQLgsmiW3ZyyQWDGalUzbe8v4yQ3BzGwi5wS5Sdst1/dIEe4jDC4ohZRJ6ktgmjTZ0fU8HMkATTTGsZmu/7rv9xZ3e2ukZhmsTzLrwczOJEvk1Rrpc1BpBiHgUYw7xidD8RmNUjzB4x7fLSJH5N11ffJusgfcj/Q8XMT/sdNwOT1wVk/Acnh8OKc/M4SUb8O7JEo2xWbnsk01qmpGD4Yyq73o/Gkwhdek/IH858Km8ZFXZczY/fK0wHj3qb4Q+95Fx6ixBio5Y=
+  app:
+    master: neruko

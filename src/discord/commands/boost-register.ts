@@ -1,7 +1,7 @@
-import { User } from "database/models/user";
 import { Message } from "discord.js";
-import { MessageHandlerArguments } from "discord/bot.service";
 import { Collection, FindAndModifyWriteOpResultObject } from "mongodb";
+import { User } from "../../database/models/user";
+import { MessageHandlerArguments } from "../../discord/bot.service";
 
 /**
  * The command for registering boost on a user

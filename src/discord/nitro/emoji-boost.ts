@@ -1,5 +1,5 @@
 import { RichEmbed } from "discord.js";
-import { DiscordMessageHandler, MessageHandlerArguments } from "discord/bot.service";
+import { DiscordMessageHandler, MessageHandlerArguments } from "../../discord/bot.service";
 import { NitroBoosterInterface } from "./nitro-booster-interface";
 
 /**
