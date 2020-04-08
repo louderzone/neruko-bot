@@ -2,6 +2,9 @@
   "name": "@lz/neruko",
   "version": "1.0.0",
   "description": "Discord bot for shift management",
+  "engines": {
+    "node": "12.16.x"
+  },
   "main": "dist/bootstrap.js",
   "scripts": {
     "lint": "eslint \"src/**\" && tslint \"src/**\"",

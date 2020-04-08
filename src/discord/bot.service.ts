@@ -24,6 +24,18 @@ import { DECLINE_REACTION, OK_REACTION } from "./reactions";
 
 export const NERUKO_NAME = "neruko";
 
+const ANALYZE_LIST = [
+    "打",
+    "衝",
+    "跑",
+    "沖",
+    "婆",
+    "香",
+    "T1",
+    "DD",
+    "推"
+];
+
 /**
  * Represents a Discord onMessage handler
  */
@@ -135,6 +147,10 @@ export class Neruko implements BotProvidable {
     @nitro()
     private async onMessage(options: MessageHandlerArguments): Promise<void> {
         const { msg, client } = options;
+        if (!ANALYZE_LIST.some((text) => msg.content.includes(text))) {
+            return;
+        }
+
         const result = await this.luis.predictDiscordAsync(msg);
 
         // Handle the intent
