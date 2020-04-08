@@ -1,4 +1,4 @@
-import { DiscordMessageHandler, MessageHandlerArguments } from "discord/bot.service";
+import { DiscordMessageHandler, MessageHandlerArguments } from "../../discord/bot.service";
 
 /**
  * Represents the requirements for implementing a Nitro Booster interface

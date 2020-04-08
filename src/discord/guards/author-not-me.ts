@@ -1,4 +1,4 @@
-import { MessageHandlerArguments } from "discord/bot.service";
+import { MessageHandlerArguments } from "../../discord/bot.service";
 
 /**
  * Checks if the user is not the bot herself

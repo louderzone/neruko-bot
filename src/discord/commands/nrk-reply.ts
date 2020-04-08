@@ -1,4 +1,4 @@
-import { MessageHandlerArguments } from "discord/bot.service";
+import { MessageHandlerArguments } from "../../discord/bot.service";
 
 export const REPLY_COMMAND = "/nrk:reply ";
 
