@@ -1,4 +1,4 @@
-import { Client, Collection, Message, MessageReaction, TextChannel, User } from "discord.js";
+import { Client, Message, MessageReaction, TextChannel, User, } from "discord.js";
 import { inject } from "inversify";
 import { fluentProvide } from "inversify-binding-decorators";
 import { SERVICE } from "../constants/services";
@@ -120,8 +120,8 @@ export class Neruko implements BotProvidable {
 
         await msg.awaitReactions(filter, { max: 5, time });
         const { reactions } = msg;
-        const responded = reactions.find((r) => r.emoji.name === OK_REACTION).users.size - 1;
-        const declined = reactions.find((r) => r.emoji.name === DECLINE_REACTION).users.size - 1;
+        const responded = reactions.resolve(OK_REACTION).users.cache.size - 1;
+        const declined = reactions.resolve(DECLINE_REACTION).users.cache.size - 1;
         await this.db.getStatuses().findOneAndUpdate({
             name: NERUKO_NAME,
         }, {
@@ -159,10 +159,7 @@ export class Neruko implements BotProvidable {
         // Output debug message
         const reply = buildDebugMessage(result, msg);
         if (reply === null) { return; } // Do not register None intents
-        const channels = client.channels as Collection<string, TextChannel>;
-        const talkChannels =  channels.filter((c) => c.id === process.env.HOME_CHANNEL_ID);
-        talkChannels.forEach((c) => {
-                c.send(reply);
-            });
+        const channel = await client.channels.fetch(process.env.HOME_CHANNEL_ID) as TextChannel;
+        channel.send(reply);
     }
 }

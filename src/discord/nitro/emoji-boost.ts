@@ -1,4 +1,4 @@
-import { RichEmbed } from "discord.js";
+import { MessageEmbed } from "discord.js";
 import { DiscordMessageHandler, MessageHandlerArguments } from "../../discord/bot.service";
 import { NitroBoosterInterface } from "./nitro-booster-interface";
 
@@ -24,11 +24,11 @@ export class EmojiBooster implements NitroBoosterInterface {
         const emojisFound = content.match(this.emojiSearch);
         emojisFound.forEach((emoteString) => {
             const name = emoteString.replace(/:/g, "");
-            const emoji = msg.guild.emojis.find((e) => e.name === name);
+            const emoji = msg.guild.emojis.cache.find((e) => e.name === name);
             replyText = replyText.replace(emoteString, emoji.toString());
         });
         msg.delete();
-        msg.channel.send(`${replyText}`, new RichEmbed({
+        msg.channel.send(`${replyText}`, new MessageEmbed({
             color: 13956093,
             description: `<@${author.id}>`
         }));
