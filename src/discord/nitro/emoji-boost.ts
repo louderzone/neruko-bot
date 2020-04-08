@@ -27,11 +27,19 @@ export class EmojiBooster implements NitroBoosterInterface {
             const emoji = msg.guild.emojis.cache.find((e) => e.name === name);
             replyText = replyText.replace(emoteString, emoji.toString());
         });
+
+        // Pretends to be the user
+        const whoami = msg.guild.me.nickname;
+        await msg.guild.me.setNickname(msg.member.nickname, "speak as");
+
         msg.delete();
-        msg.channel.send(`${replyText}`, new MessageEmbed({
+        await msg.channel.send(`${replyText}`, new MessageEmbed({
             color: 13956093,
             description: `<@${author.id}>`
         }));
+
+        // Setting the nickname back to original
+        await msg.guild.me.setNickname(whoami, "cleanup speak as");
     }
 
     /**
