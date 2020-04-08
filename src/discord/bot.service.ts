@@ -12,6 +12,7 @@ import {
     boostRegister,
     boostUnregister
 } from "./commands/boost-register";
+import { NICKNAME_RESET_COMMAND, nrkNickReset } from "./commands/nrk-nick-reset";
 import { NERUKO_REGISTER_COMMAND, nrkRegister } from "./commands/nrk-register";
 import { nrkReply, REPLY_COMMAND } from "./commands/nrk-reply";
 import { guard } from "./guard.decorator";
@@ -23,6 +24,7 @@ import { nitro } from "./nitro.decorator";
 import { DECLINE_REACTION, OK_REACTION } from "./reactions";
 
 export const NERUKO_NAME = "neruko";
+export const NERUKO_DISPLAY_NAME = "ねるこ";
 
 const ANALYZE_LIST = [
     "打",
@@ -148,6 +150,7 @@ export class Neruko implements BotProvidable {
     @fixedCommand({ command: BOOST_REGISTER_COMMAND }, boostRegister)
     @fixedCommand({ command: BOOST_UNREGISTER_COMMAND }, boostUnregister)
     @fixedCommand({ command: NERUKO_REGISTER_COMMAND }, nrkRegister)
+    @fixedCommand({ command: NICKNAME_RESET_COMMAND }, nrkNickReset)
     @nitro()
     private async onMessage(options: MessageHandlerArguments): Promise<void> {
         const { msg, client } = options;
