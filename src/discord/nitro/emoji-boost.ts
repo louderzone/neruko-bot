@@ -38,7 +38,7 @@ export class EmojiBooster implements NitroBoosterInterface {
         }));
 
         // Setting the nickname back to original
-        await msg.guild.me.setNickname(whoami, "cleanup speak as");
+        await msg.guild.me.setNickname("", "cleanup speak as");
     }
 
     /**
