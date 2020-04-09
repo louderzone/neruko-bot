@@ -25,6 +25,8 @@ export class EmojiBooster implements NitroBoosterInterface {
         emojisFound.forEach((emoteString) => {
             const name = emoteString.replace(/:/g, "");
             const emoji = msg.guild.emojis.cache.find((e) => e.name === name);
+            if (emoji === undefined) { return; } // Do nothing if emoji not in cache
+
             replyText = replyText.replace(emoteString, emoji.toString());
         });
 
