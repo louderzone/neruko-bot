@@ -34,7 +34,7 @@ export class EmojiBooster implements NitroBoosterInterface {
 
         msg.delete();
         await msg.channel.send(`${replyText}`, new MessageEmbed({
-            color: 13956093,
+            color: msg.member.displayColor,
             description: `<@${author.id}>`
         }));
 
