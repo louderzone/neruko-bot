@@ -29,8 +29,7 @@ export class EmojiBooster implements NitroBoosterInterface {
         });
 
         // Pretends to be the user
-        const whoami = msg.guild.me.nickname;
-        await msg.guild.me.setNickname(msg.member.nickname, "speak as user");
+        await msg.guild.me.setNickname(msg.member.displayName, "speak as user");
 
         msg.delete();
         await msg.channel.send(`${replyText}`, new MessageEmbed({
