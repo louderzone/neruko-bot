@@ -1,4 +1,4 @@
-import { Client, Collection, Message, MessageReaction, TextChannel, User } from "discord.js";
+import { Client, Message, MessageReaction, TextChannel, User, } from "discord.js";
 import { inject } from "inversify";
 import { fluentProvide } from "inversify-binding-decorators";
 import { SERVICE } from "../constants/services";
@@ -12,6 +12,7 @@ import {
     boostRegister,
     boostUnregister
 } from "./commands/boost-register";
+import { NICKNAME_RESET_COMMAND, nrkNickReset } from "./commands/nrk-nick-reset";
 import { NERUKO_REGISTER_COMMAND, nrkRegister } from "./commands/nrk-register";
 import { nrkReply, REPLY_COMMAND } from "./commands/nrk-reply";
 import { guard } from "./guard.decorator";
@@ -23,6 +24,7 @@ import { nitro } from "./nitro.decorator";
 import { DECLINE_REACTION, OK_REACTION } from "./reactions";
 
 export const NERUKO_NAME = "neruko";
+export const NERUKO_DISPLAY_NAME = "ねるこ";
 
 const ANALYZE_LIST = [
     "打",
@@ -120,8 +122,12 @@ export class Neruko implements BotProvidable {
 
         await msg.awaitReactions(filter, { max: 5, time });
         const { reactions } = msg;
-        const responded = reactions.find((r) => r.emoji.name === OK_REACTION).users.size - 1;
-        const declined = reactions.find((r) => r.emoji.name === DECLINE_REACTION).users.size - 1;
+        const responded = reactions
+            .resolve(OK_REACTION)
+            .users.cache.size - 1;
+        const declined = reactions
+            .resolve(DECLINE_REACTION)
+            .users.cache.size - 1;
         await this.db.getStatuses().findOneAndUpdate({
             name: NERUKO_NAME,
         }, {
@@ -136,6 +142,11 @@ export class Neruko implements BotProvidable {
         });
     }
 
+    /**
+     * Handles message received from discord
+     *
+     * @param options
+     */
     @guard(
         notMe,
         contentNotEmpty
@@ -144,6 +155,7 @@ export class Neruko implements BotProvidable {
     @fixedCommand({ command: BOOST_REGISTER_COMMAND }, boostRegister)
     @fixedCommand({ command: BOOST_UNREGISTER_COMMAND }, boostUnregister)
     @fixedCommand({ command: NERUKO_REGISTER_COMMAND }, nrkRegister)
+    @fixedCommand({ command: NICKNAME_RESET_COMMAND }, nrkNickReset)
     @nitro()
     private async onMessage(options: MessageHandlerArguments): Promise<void> {
         const { msg, client } = options;
@@ -159,10 +171,7 @@ export class Neruko implements BotProvidable {
         // Output debug message
         const reply = buildDebugMessage(result, msg);
         if (reply === null) { return; } // Do not register None intents
-        const channels = client.channels as Collection<string, TextChannel>;
-        const talkChannels =  channels.filter((c) => c.id === process.env.HOME_CHANNEL_ID);
-        talkChannels.forEach((c) => {
-                c.send(reply);
-            });
+        const channel = await client.channels.fetch(process.env.HOME_CHANNEL_ID) as TextChannel;
+        channel.send(reply);
     }
 }

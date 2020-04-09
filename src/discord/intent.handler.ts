@@ -20,7 +20,7 @@ async function rankRunOnDetected(msg: Message): Promise<void> {
  * @param msg The discord message context
  */
 async function ddOnDetected(msg: Message): Promise<void> {
-    msg.react(msg.guild.emojis.get("690157951310102583"));
+    msg.react(msg.guild.emojis.resolve("690157951310102583"));
 }
 
 /**

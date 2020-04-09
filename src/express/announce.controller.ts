@@ -1,4 +1,4 @@
-import { Collection, Message, TextChannel } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import { inject } from "inversify";
 import { BaseHttpController, controller, httpGet, httpPost, interfaces, requestBody } from "inversify-express-utils";
 import { SERVICE } from "../constants/services";
@@ -27,6 +27,9 @@ export const ANNOUNCE_PURPOSE_JP_ONBOARD = "jp-15";
  */
 export const ANNOUNCE_PURPOSE_MISSING_MEMBER = "member-missing";
 
+/**
+ * An http endpoint handling announcement related requests
+ */
 @controller("/announce")
 export class AnnounceController extends BaseHttpController {
     constructor(
@@ -48,8 +51,9 @@ export class AnnounceController extends BaseHttpController {
         const { cid, msg: content, purpose } = body;
         if (content.trim().length === 0) { return this.statusCode(204); } // Do not send empty content
 
-        const channels = this.neruko.getBot().channels as Collection<string, TextChannel>;
-        const targetChannel =  channels.find((c) => c.id === cid);
+        const targetChannel =  await this.neruko
+            .getBot()
+            .channels.fetch(cid) as TextChannel;
         if (targetChannel === undefined) { return this.statusCode(204); } // Channel not found
 
         const msg = (await targetChannel.send(content)) as Message;
@@ -93,14 +97,13 @@ export class AnnounceController extends BaseHttpController {
      * @param body
      */
     @httpPost("/speed")
-    private speed(
+    private async speed(
         @requestBody() body: SpeedForm
-    ): interfaces.IHttpActionResult {
-        const channels = this.neruko.getBot().channels as Collection<string, TextChannel>;
-        const talkChannels =  channels.filter((c) => c.id === process.env.CHANNEL_ID);
-        talkChannels.forEach((c) => {
-            c.send(body.msg);
-        });
+    ): Promise<interfaces.IHttpActionResult> {
+        const speedChannel =  await this.neruko
+            .getBot()
+            .channels.fetch(process.env.CHANNEL_ID) as TextChannel;
+        speedChannel.send(body.msg);
         return this.statusCode(200);
     }
 }

@@ -9,6 +9,8 @@ export const REPLY_COMMAND = "/nrk:reply ";
  */
 export async function nrkReply(args: MessageHandlerArguments): Promise<void> {
     const { msg } = args;
-    msg.delete();
+    msg.delete({
+        reason: "Speak as bot command"
+    });
     await msg.channel.send(msg.content.substring(REPLY_COMMAND.length));
 }

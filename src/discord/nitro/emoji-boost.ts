@@ -1,4 +1,4 @@
-import { RichEmbed } from "discord.js";
+import { MessageEmbed } from "discord.js";
 import { DiscordMessageHandler, MessageHandlerArguments } from "../../discord/bot.service";
 import { NitroBoosterInterface } from "./nitro-booster-interface";
 
@@ -24,14 +24,22 @@ export class EmojiBooster implements NitroBoosterInterface {
         const emojisFound = content.match(this.emojiSearch);
         emojisFound.forEach((emoteString) => {
             const name = emoteString.replace(/:/g, "");
-            const emoji = msg.guild.emojis.find((e) => e.name === name);
+            const emoji = msg.guild.emojis.cache.find((e) => e.name === name);
             replyText = replyText.replace(emoteString, emoji.toString());
         });
+
+        // Pretends to be the user
+        const whoami = msg.guild.me.nickname;
+        await msg.guild.me.setNickname(msg.member.nickname, "speak as user");
+
         msg.delete();
-        msg.channel.send(`${replyText}`, new RichEmbed({
-            color: 13956093,
+        await msg.channel.send(`${replyText}`, new MessageEmbed({
+            color: msg.member.displayColor || 13956093,
             description: `<@${author.id}>`
         }));
+
+        // Setting the nickname back to original
+        await msg.guild.me.setNickname(whoami, "cleanup speak as");
     }
 
     /**
