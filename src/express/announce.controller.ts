@@ -46,11 +46,11 @@ export class AnnounceController extends BaseHttpController {
         @requestBody() body: ShiftForm
     ): Promise<interfaces.IHttpActionResult> {
         const { cid, msg: content, purpose } = body;
-        if (content.trim().length === 0) { return this.ok(); } // Do not send empty content
+        if (content.trim().length === 0) { return this.statusCode(204); } // Do not send empty content
 
         const channels = this.neruko.getBot().channels as Collection<string, TextChannel>;
         const targetChannel =  channels.find((c) => c.id === cid);
-        if (targetChannel === undefined) { return this.ok(); } // Channel not found
+        if (targetChannel === undefined) { return this.statusCode(204); } // Channel not found
 
         const msg = (await targetChannel.send(content)) as Message;
         if (purpose !== ANNOUNCE_PURPOSE_TW_ONBOARD) { return this.ok(); }
@@ -73,7 +73,7 @@ export class AnnounceController extends BaseHttpController {
         await msg.react("👌🏻");
         await msg.react("❌");
         this.neruko.subscribeToMessage(msg, 300_000);
-        return this.statusCode(200);
+        return this.ok();
     }
 
     /**
