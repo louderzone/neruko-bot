@@ -27,7 +27,11 @@ export class EmojiBooster implements NitroBoosterInterface {
             const emoji = guild.emojis.cache.find((e) => e.name === name);
             if (emoji === undefined) { return; } // Do nothing if emoji not in cache
 
-            replyText = replyText.replace(emoteString, emoji.toString());
+            const emoteRegex = new RegExp(this.emojiSearch, "g");
+            replyText = replyText.replace(
+                emoteRegex,
+                emoji.toString()
+            );
         });
 
         // Pretends to be the user
