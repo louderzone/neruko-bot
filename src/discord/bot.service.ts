@@ -24,7 +24,6 @@ import { nitro } from "./nitro.decorator";
 import { DECLINE_REACTION, OK_REACTION } from "./reactions";
 
 export const NERUKO_NAME = "neruko";
-export const NERUKO_DISPLAY_NAME = "ねるこ";
 
 const ANALYZE_LIST = [
     "打",

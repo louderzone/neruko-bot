@@ -1,4 +1,4 @@
-import { MessageHandlerArguments, NERUKO_DISPLAY_NAME } from "../../discord/bot.service";
+import { MessageHandlerArguments } from "../../discord/bot.service";
 
 export const NICKNAME_RESET_COMMAND = "/nrk:nick reset";
 
@@ -10,5 +10,5 @@ export const NICKNAME_RESET_COMMAND = "/nrk:nick reset";
  * @param args
  */
 export async function nrkNickReset(args: MessageHandlerArguments): Promise<void> {
-    await args.msg.guild.me.setNickname(NERUKO_DISPLAY_NAME);
+    await args.msg.guild.me.setNickname("");
 }

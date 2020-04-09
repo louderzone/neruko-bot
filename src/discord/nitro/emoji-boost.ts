@@ -19,27 +19,28 @@ export class EmojiBooster implements NitroBoosterInterface {
      */
     func: DiscordMessageHandler = async (args) => {
         const { msg } = args;
-        const { content, author } = msg;
+        const { author, channel, content, guild, member} = msg;
         let replyText = content;
         const emojisFound = content.match(this.emojiSearch);
         emojisFound.forEach((emoteString) => {
             const name = emoteString.replace(/:/g, "");
-            const emoji = msg.guild.emojis.cache.find((e) => e.name === name);
+            const emoji = guild.emojis.cache.find((e) => e.name === name);
+            if (emoji === undefined) { return; } // Do nothing if emoji not in cache
+
             replyText = replyText.replace(emoteString, emoji.toString());
         });
 
         // Pretends to be the user
-        const whoami = msg.guild.me.nickname;
-        await msg.guild.me.setNickname(msg.member.nickname, "speak as user");
+        await guild.me.setNickname(member.displayName, "speak as user");
 
         msg.delete();
-        await msg.channel.send(`${replyText}`, new MessageEmbed({
-            color: msg.member.displayColor || 13956093,
+        await channel.send(`${replyText}`, new MessageEmbed({
+            color: member.displayColor || 13956093,
             description: `<@${author.id}>`
         }));
 
         // Setting the nickname back to original
-        await msg.guild.me.setNickname(whoami, "cleanup speak as");
+        await guild.me.setNickname("", "cleanup speak as");
     }
 
     /**

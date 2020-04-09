@@ -1,6 +1,13 @@
-import { Message, TextChannel } from "discord.js";
+import { TextChannel } from "discord.js";
 import { inject } from "inversify";
-import { BaseHttpController, controller, httpGet, httpPost, interfaces, requestBody } from "inversify-express-utils";
+import {
+    BaseHttpController,
+    controller,
+    httpGet,
+    httpPost,
+    interfaces,
+    requestBody
+} from "inversify-express-utils";
 import { SERVICE } from "../constants/services";
 import { MongoDb } from "../database/mongodb.service";
 import { Neruko, NERUKO_NAME } from "../discord/bot.service";
@@ -56,23 +63,24 @@ export class AnnounceController extends BaseHttpController {
             .channels.fetch(cid) as TextChannel;
         if (targetChannel === undefined) { return this.statusCode(204); } // Channel not found
 
-        const msg = (await targetChannel.send(content)) as Message;
+        const msg = await targetChannel.send(content);
         if (purpose !== ANNOUNCE_PURPOSE_TW_ONBOARD) { return this.ok(); }
 
         // Updates the last announce statistics after announcement
         // On board only Taiwanese members
-        await this.db.getStatuses().findOneAndUpdate({
-            name: NERUKO_NAME,
-        }, {
-            $set: {
-                lastAnnounce: {
-                    id: msg.id,
-                    responded: 0,
-                    declined: 0,
-                    purpose: ANNOUNCE_PURPOSE_TW_ONBOARD
+        await this.db.getStatuses()
+            .findOneAndUpdate({
+                name: NERUKO_NAME,
+            }, {
+                $set: {
+                    lastAnnounce: {
+                        id: msg.id,
+                        responded: 0,
+                        declined: 0,
+                        purpose: ANNOUNCE_PURPOSE_TW_ONBOARD
+                    }
                 }
-            }
-        });
+            });
 
         await msg.react("👌🏻");
         await msg.react("❌");
@@ -85,9 +93,10 @@ export class AnnounceController extends BaseHttpController {
      */
     @httpGet("/stat")
     private async stat(): Promise<interfaces.IHttpActionResult> {
-        const status = await this.db.getStatuses().findOne({
-            name: NERUKO_NAME
-        });
+        const status = await this.db.getStatuses()
+            .findOne({
+                name: NERUKO_NAME
+            });
         return this.json(status.lastAnnounce);
     }
 
