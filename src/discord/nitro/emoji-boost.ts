@@ -22,12 +22,19 @@ export class EmojiBooster implements NitroBoosterInterface {
         const { author, channel, content, guild, member} = msg;
         let replyText = content;
         const emojisFound = content.match(this.emojiSearch);
-        emojisFound.forEach((emoteString) => {
+        const uniqueEmoji = emojisFound.filter((elem, pos) => {
+            return emojisFound.indexOf(elem) === pos;
+        });
+        uniqueEmoji.forEach((emoteString) => {
             const name = emoteString.replace(/:/g, "");
             const emoji = guild.emojis.cache.find((e) => e.name === name);
             if (emoji === undefined) { return; } // Do nothing if emoji not in cache
 
-            replyText = replyText.replace(emoteString, emoji.toString());
+            const emoteRegex = new RegExp(emoteString, "g");
+            replyText = replyText.replace(
+                emoteRegex,
+                emoji.toString()
+            );
         });
 
         // Pretends to be the user
