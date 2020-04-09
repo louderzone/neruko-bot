@@ -27,6 +27,9 @@ export const ANNOUNCE_PURPOSE_JP_ONBOARD = "jp-15";
  */
 export const ANNOUNCE_PURPOSE_MISSING_MEMBER = "member-missing";
 
+/**
+ * An http endpoint handling announcement related requests
+ */
 @controller("/announce")
 export class AnnounceController extends BaseHttpController {
     constructor(

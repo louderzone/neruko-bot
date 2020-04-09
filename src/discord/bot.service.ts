@@ -142,6 +142,11 @@ export class Neruko implements BotProvidable {
         });
     }
 
+    /**
+     * Handles message received from discord
+     *
+     * @param options
+     */
     @guard(
         notMe,
         contentNotEmpty
