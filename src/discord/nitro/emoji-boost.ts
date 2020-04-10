@@ -25,17 +25,22 @@ export class EmojiBooster implements NitroBoosterInterface {
         const uniqueEmoji = emojisFound.filter((elem, pos) => {
             return emojisFound.indexOf(elem) === pos;
         });
+
+        let changed = false;
         uniqueEmoji.forEach((emoteString) => {
             const name = emoteString.replace(/:/g, "");
             const emoji = guild.emojis.cache.find((e) => e.name === name);
             if (emoji === undefined) { return; } // Do nothing if emoji not in cache
 
+            changed = true;
             const emoteRegex = new RegExp(emoteString, "g");
             replyText = replyText.replace(
                 emoteRegex,
                 emoji.toString()
             );
         });
+
+        if (changed === false) { return; } // Do nothing is no emoji is actually replaced
 
         // Pretends to be the user
         await guild.me.setNickname(member.displayName, "speak as user");
