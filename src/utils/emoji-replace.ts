@@ -1,5 +1,5 @@
 import { Emoji, GuildEmojiManager } from "discord.js";
-import { KeyValueObject } from "misc/key-value-pair";
+import { KeyValueObject } from "../misc/key-value-pair";
 import { notUndefined } from "./filters/not-undefined-filter";
 
 /**
