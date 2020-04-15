@@ -1,4 +1,5 @@
 import { MessageHandlerArguments } from "../../discord/bot.service";
+import { replaceEmoji } from "../../utils/emoji-replace";
 
 export const REPLY_COMMAND = "/nrk:reply ";
 
@@ -12,5 +13,7 @@ export async function nrkReply(args: MessageHandlerArguments): Promise<void> {
     msg.delete({
         reason: "Speak as bot command"
     });
-    await msg.channel.send(msg.content.substring(REPLY_COMMAND.length));
+    let content = msg.content.substring(REPLY_COMMAND.length);
+    content = replaceEmoji(content, msg.guild.emojis);
+    await msg.channel.send(content);
 }
