@@ -1,7 +1,7 @@
 import { MessageHandlerArguments } from "../../discord/bot.service";
 import { replaceEmoji } from "../../utils/emoji-replace";
 
-export const REPLY_COMMAND = "/nrk:reply ";
+export const REPLY_COMMAND = "/neruko ";
 
 /**
  * Handles when /nrk:reply command is received
