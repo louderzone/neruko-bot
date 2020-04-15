@@ -35,10 +35,11 @@ export function replaceEmoji(message: string, emojiManager: GuildEmojiManager): 
     const emojiPairs = findEmojis.filter(notUndefined);
     // Replace each emoji text from cache
     emojiPairs.forEach((obj) => {
-        const emoteRegex = new RegExp(obj.id, "g");
+        const { id, value } = obj;
+        const emoteRegex = new RegExp(id, "g");
         message = message.replace(
             emoteRegex,
-            obj.value.toString()
+            value.toString()
         );
     });
 
