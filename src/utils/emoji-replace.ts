@@ -15,6 +15,7 @@ export const emoteGex = /(?<!<)(?<!<a):([A-z0-9-_]+):/g;
  */
 export function replaceEmoji(message: string, emojiManager: GuildEmojiManager): string {
     const emojisFound = message.match(emoteGex);
+    if (emojisFound === undefined) { return message; } // No emoji presents in the string, do nothing
 
     // Find unique emojis to avoid multiple replacements on single emoji
     const uniqueEmoji = emojisFound.filter((elem, pos) => {
