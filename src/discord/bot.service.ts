@@ -4,6 +4,7 @@ import { fluentProvide } from "inversify-binding-decorators";
 import { SERVICE } from "../constants/services";
 import { MongoDb } from "../database/mongodb.service";
 import { ANNOUNCE_PURPOSE_TW_ONBOARD } from "../express/announce.controller";
+import { ComputerVisionService } from "../luis/computer-vision.service";
 import { LuisService } from "../luis/luis.service";
 import { command, fixedCommand } from "./command.decorator";
 import {
@@ -22,6 +23,7 @@ import { INTENT_HANDLER } from "./intent.handler";
 import { buildDebugMessage } from "./message.handler";
 import { nitro } from "./nitro.decorator";
 import { DECLINE_REACTION, OK_REACTION } from "./reactions";
+import { computerVision } from "./utils/computer-vision.decorator";
 
 export const NERUKO_NAME = "neruko";
 
@@ -60,6 +62,11 @@ export interface MessageHandlerArguments {
      * Gets the Mongo DB instance
      */
     readonly db: MongoDb;
+
+    /**
+     * Gets the computer vision service instance
+     */
+    readonly computerVision: ComputerVisionService;
 }
 
 /**
@@ -86,7 +93,8 @@ export class Neruko implements BotProvidable {
 
     constructor(
         @inject(SERVICE.Luis) private luis: LuisService,
-        @inject(SERVICE.MongoDb) private db: MongoDb
+        @inject(SERVICE.MongoDb) private db: MongoDb,
+        @inject(SERVICE.ComputerVision) private computerVision: ComputerVisionService
     ) {
         const bot = this.bot = new Client();
         bot.on("ready", () => {
@@ -96,7 +104,8 @@ export class Neruko implements BotProvidable {
         bot.on("message", (msg) => this.onMessage({
             msg,
             client: bot,
-            db
+            db,
+            computerVision
         }));
         bot.login(process.env.DISCORD_TOKEN);
     }
@@ -155,6 +164,7 @@ export class Neruko implements BotProvidable {
     @fixedCommand({ command: BOOST_UNREGISTER_COMMAND }, boostUnregister)
     @fixedCommand({ command: NERUKO_REGISTER_COMMAND }, nrkRegister)
     @fixedCommand({ command: NICKNAME_RESET_COMMAND }, nrkNickReset)
+    @computerVision()
     @nitro()
     private async onMessage(options: MessageHandlerArguments): Promise<void> {
         const { msg, client } = options;
