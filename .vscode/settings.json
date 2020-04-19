@@ -1,7 +1,10 @@
 {
     "cSpell.words": [
         "Neruko",
+        "cognitiveservices",
+        "computervision",
         "inversify",
+        "promisify",
         "upsert",
         "whoami"
     ],
