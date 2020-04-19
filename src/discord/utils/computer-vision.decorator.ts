@@ -1,6 +1,48 @@
+import { promisify } from "bluebird";
 import { MessageEmbed } from "discord.js";
+import { imageHash } from "image-hash";
+import { Collection } from "mongodb";
 import { PrImage } from "../../database/models/pr-image";
 import { DiscordMessageHandler, MessageHandlerArguments } from "../bot.service";
+
+const imageHashAsync = promisify(imageHash);
+
+/**
+ * Creates a perceptual hash for the image
+ * for finding duplicated images in the database
+ *
+ * @param url
+ */
+async function hashImage(url: string): Promise<string> {
+    const hashUrl = url.match(/.+?(?<=png|jpg|bmp)/);
+    if (hashUrl === null) { return undefined; } // Only accept png/jpg/bmp
+
+    try {
+        return await imageHashAsync(hashUrl[0], 16, true) as string;
+    } catch {
+        // If hash fail, returns nothing
+        return null;
+    }
+}
+
+/**
+ * Checks if the image with the same perceptual hash
+ * already exists in the database
+ *
+ * @param hash The pHash of the image
+ * @param collection
+ */
+async function imageExists(
+    hash: string,
+    collection: Collection<PrImage>
+): Promise<boolean> {
+    if (hash === null) { return true; } // Cannot hash this image, discard it
+
+    const result = await collection.findOne({
+        hash
+    });
+    return result !== null;
+}
 
 /**
  * Analyze embedded images in the message (most likely from
@@ -21,14 +63,34 @@ async function recordEmbedded(
         if (e?.image?.url === undefined) { return undefined; } // If the embedded message does not have an image (?)
 
         const { url } = e.image;
-        const vision = await args.computerVision.describeImageAsync(url);
-        return {
-            url,
-            vision
-        };
+
+        // Checks image hash
+        const hash = await hashImage(url);
+        // Checks if same image exists in the collection
+        if (await imageExists(hash, imageCollection)) { return undefined; }
+
+        try {
+            const vision = await args.computerVision.describeImageAsync(url);
+            return {
+                url,
+                vision,
+                hash
+            };
+        } catch (e) {
+            console.log(e);
+            // If computer API failed in any ways, ignore that image
+            // Catch the exception here such that it doesn't crash the whole stack
+            // successful images can continue to be inserted
+            return undefined;
+        }
     });
-    const prImages = await Promise.all(promises);
-    await imageCollection.insertMany(prImages);
+
+    const visionResults = await Promise.all(promises);
+    const prImages = visionResults.filter((r) => r !== undefined);
+    if (prImages.length > 0) {
+        // Adds to the database
+        await imageCollection.insertMany(prImages);
+    }
 }
 
 /**
