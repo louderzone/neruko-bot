@@ -1,5 +1,6 @@
 import { promisify } from "bluebird";
-import { MessageEmbed } from "discord.js";
+import { MessageAttachment, MessageEmbed } from "discord.js";
+import { Collection as DcCollection } from "discord.js";
 import { imageHash } from "image-hash";
 import { Collection } from "mongodb";
 import { PrImage } from "../../database/models/pr-image";
@@ -32,7 +33,7 @@ async function hashImage(url: string): Promise<string> {
  * @param hash The pHash of the image
  * @param collection
  */
-async function imageExists(
+async function imageExistsAsync(
     hash: string,
     collection: Collection<PrImage>
 ): Promise<boolean> {
@@ -45,51 +46,94 @@ async function imageExists(
 }
 
 /**
+ * Applies computer vision to the image
+ *
+ * @param url The url of the image
+ * @param args
+ */
+async function describeImageAsync(
+    url: string,
+    args: MessageHandlerArguments
+): Promise<PrImage> {
+    // Checks image hash
+    const hash = await hashImage(url);
+    // Checks if same image exists in the collection
+    if (await imageExistsAsync(hash, args.db.getPrImages())) {
+        return undefined;
+    }
+
+    try {
+        const vision = await args.computerVision.describeImageAsync(url);
+        return {
+            url,
+            vision,
+            hash
+        };
+    } catch (e) {
+        console.log(e);
+        // If computer API failed in any ways, ignore that image
+        // Catch the exception here such that it doesn't crash the whole stack
+        // successful images can continue to be inserted
+        return undefined;
+    }
+}
+
+/**
  * Analyze embedded images in the message (most likely from
- * an external link such as twitter) and saves the result to
- * the database
+ * an external link such as twitter)
  *
  * @param embeds
  * @param args
  */
-async function recordEmbedded(
+async function recordEmbeddedAsync(
     embeds: MessageEmbed[],
     args: MessageHandlerArguments
-): Promise<void> {
-    if (embeds.length === 0) { return; } // Nothing embedded ignore
+): Promise<PrImage[]> {
+    if (embeds.length === 0) { return []; } // Nothing embedded ignore
 
-    const imageCollection = args.db.getPrImages();
     const promises = embeds.map<Promise<PrImage>>(async (e) => {
         if (e?.image?.url === undefined) { return undefined; } // If the embedded message does not have an image (?)
-
-        const { url } = e.image;
-
-        // Checks image hash
-        const hash = await hashImage(url);
-        // Checks if same image exists in the collection
-        if (await imageExists(hash, imageCollection)) { return undefined; }
-
-        try {
-            const vision = await args.computerVision.describeImageAsync(url);
-            return {
-                url,
-                vision,
-                hash
-            };
-        } catch (e) {
-            console.log(e);
-            // If computer API failed in any ways, ignore that image
-            // Catch the exception here such that it doesn't crash the whole stack
-            // successful images can continue to be inserted
-            return undefined;
-        }
+        return await describeImageAsync(e.image.url, args);
     });
 
     const visionResults = await Promise.all(promises);
-    const prImages = visionResults.filter((r) => r !== undefined);
+    return visionResults.filter((r) => r !== undefined) ?? [];
+}
+
+/**
+ * Analyze image attachments in the message
+ *
+ * @param attachments
+ * @param args
+ */
+async function recordAttachmentsAsync(
+    attachments: DcCollection<string, MessageAttachment>,
+    args: MessageHandlerArguments
+): Promise<PrImage[]> {
+    if (attachments.size === 0) { return []; } // Nothing embedded ignore
+
+    const promises = attachments.map<Promise<PrImage>>(async (a) => {
+        return await describeImageAsync(a.url, args);
+    });
+
+    const visionResults = await Promise.all(promises);
+    return visionResults.filter((r) => r !== undefined) ?? [];
+}
+
+/**
+ * Inserts the recognition results to the database
+ *
+ * @param prImages
+ * @param args
+ */
+async function insertImagesAsync(
+    prImages: PrImage[],
+    args: MessageHandlerArguments
+): Promise<void> {
     if (prImages.length > 0) {
         // Adds to the database
-        await imageCollection.insertMany(prImages);
+        await args.db.getPrImages()
+            .insertMany(prImages);
     }
 }
 
@@ -110,9 +154,14 @@ export function computerVision() {
     ): void => {
         const method = descriptor.value;
         descriptor.value = async function(args): Promise<void> {
-            const { embeds } = args.msg;
+            const { embeds, attachments } = args.msg;
             try {
-                await recordEmbedded(embeds, args);
+                const embeddedPrImages = await recordEmbeddedAsync(embeds, args);
+                const attachedPrImages = await recordAttachmentsAsync(attachments, args);
+                insertImagesAsync([
+                    ...embeddedPrImages,
+                    ...attachedPrImages
+                ], args);
             } catch (e) {
                 console.log(e);
                 // Continue to whatever should be happening in case of error
