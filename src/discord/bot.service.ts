@@ -94,7 +94,7 @@ export class Neruko implements BotProvidable {
     constructor(
         @inject(SERVICE.Luis) private luis: LuisService,
         @inject(SERVICE.MongoDb) private db: MongoDb,
-        @inject(SERVICE.ComputerVision) private computerVision: ComputerVisionService
+        @inject(SERVICE.ComputerVision) private computerVisionService: ComputerVisionService
     ) {
         const bot = this.bot = new Client();
         bot.on("ready", () => {
@@ -105,7 +105,7 @@ export class Neruko implements BotProvidable {
             msg,
             client: bot,
             db,
-            computerVision
+            computerVision: computerVisionService
         }));
         bot.login(process.env.DISCORD_TOKEN);
     }
