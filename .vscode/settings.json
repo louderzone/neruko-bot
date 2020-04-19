@@ -4,6 +4,7 @@
         "cognitiveservices",
         "computervision",
         "inversify",
+        "promisify",
         "upsert",
         "whoami"
     ],
